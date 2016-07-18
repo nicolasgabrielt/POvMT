@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".activitys.MainActivity">
+    tools:context=".activitys.ListAtividades">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -21,14 +21,17 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_main" />
+    <include layout="@layout/content_list_atividades" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+
+    <io.github.yavski.fabspeeddial.FabSpeedDial
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@android:drawable/ic_dialog_email" />
+        app:fabGravity="bottom_end"
+        app:fabMenu="@menu/menu_options_listatividades"
+        app:miniFabBackgroundTint="@android:color/white"
+        app:miniFabDrawableTint="?attr/colorPrimaryDark"
+        app:miniFabTitleTextColor="?attr/colorPrimaryDark" />
 
 </android.support.design.widget.CoordinatorLayout>

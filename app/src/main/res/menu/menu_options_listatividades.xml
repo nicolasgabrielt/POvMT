@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_ti"
+        android:icon="@mipmap/ic_timer_black"
+        android:title="TI" />
+    <item
+        android:id="@+id/action_atividade"
+        android:icon="@mipmap/ic_atividade_todo"
+        android:title="Atividade" />
+
+</menu>
