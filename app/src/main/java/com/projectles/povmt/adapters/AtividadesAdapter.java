@@ -28,7 +28,6 @@ public class AtividadesAdapter extends RecyclerView.Adapter<AtividadesAdapter.Vi
     // Provide a suitable constructor (depends on the kind of dataset)
     public AtividadesAdapter(List<Atividade> myDataset , Context context) {
         mDataset = myDataset;
-        Log.i("RECYCLER ADAPTER", myDataset.size() + "");
         this.context = context;
         this.dao = new AtividadeDAO(context);
 
