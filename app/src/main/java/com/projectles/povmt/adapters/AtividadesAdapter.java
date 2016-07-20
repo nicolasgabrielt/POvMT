@@ -12,6 +12,10 @@ import com.projectles.povmt.DAO.AtividadeDAO;
 import com.projectles.povmt.R;
 import com.projectles.povmt.models.Atividade;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -22,15 +26,20 @@ public class AtividadesAdapter extends RecyclerView.Adapter<AtividadesAdapter.Vi
 
     private List<Atividade> mDataset;
     private Context context;
-    private AtividadeDAO dao;
 
 
     // Provide a suitable constructor (depends on the kind of dataset)
     public AtividadesAdapter(List<Atividade> myDataset , Context context) {
         mDataset = myDataset;
         this.context = context;
-        this.dao = new AtividadeDAO(context);
+    }
 
+
+    public void swap(List<Atividade> datas){
+        mDataset.clear();
+        Collections.reverse(datas);
+        mDataset.addAll(datas);
+        notifyDataSetChanged();
     }
 
     // Provide a reference to the views for each data item
@@ -39,12 +48,13 @@ public class AtividadesAdapter extends RecyclerView.Adapter<AtividadesAdapter.Vi
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView nomeAtividadeTxt;
         public TextView qntHorasTxt;
-        public TextView descricao;
+        public TextView ultimaAtualizacao;
 
         public ViewHolder(View v) {
             super(v);
             nomeAtividadeTxt = (TextView) v.findViewById(R.id.nome_txt);
             qntHorasTxt = (TextView) v.findViewById(R.id.qnt_horas_txt);
+            ultimaAtualizacao = (TextView) v.findViewById(R.id.txt_data_update);
         }
     }
 
@@ -71,7 +81,14 @@ public class AtividadesAdapter extends RecyclerView.Adapter<AtividadesAdapter.Vi
 
         holder.nomeAtividadeTxt.setText(atividade.getNome());
         holder.qntHorasTxt.setText( String.valueOf(atividade.getTempoInvestido()));
+        holder.ultimaAtualizacao.setText(getStringofDate(atividade.getUltimaAtualizacao()));
 
+    }
+
+    private String getStringofDate(Date date){
+        SimpleDateFormat sdfDate = new SimpleDateFormat("dd/MM/yyyy");//dd/MM/yyyy
+        String strDate = sdfDate.format(date);
+        return strDate;
     }
 
     // Return the size of your dataset (invoked by the layout manager)

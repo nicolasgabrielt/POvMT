@@ -21,7 +21,7 @@ public class DBHelper  extends SQLiteOpenHelper {
     // Nome do banco de dados
     private static final String NOME_DO_BANCO = "dados";
     // Versão atual do banco de dados
-    private static final int VERSAO_DO_BANCO = 1;
+    private static final int VERSAO_DO_BANCO = 2;
     private static Context mContext;
 
     public DBHelper(Context context) {
@@ -40,13 +40,13 @@ public class DBHelper  extends SQLiteOpenHelper {
                 ID + " INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT" +
                 ","+NOME +" TEXT NOT NULL" +
                 ",descricao TEXT NOT NULL" +
-                ","+ ULTIMA_ATUALIZACAO +" TEXT NOT NULL" +
-                ","+ DATA +" TEXT NOT NULL" +
+                ","+ ULTIMA_ATUALIZACAO +" DATETIME NOT NULL" +
+                ","+ DATA +" DATETIME NOT NULL" +
                 ","+ TEMPO_INVESTIDO +" REAL NOT NULL" +
                 ");";
         db.execSQL(sql);
-        Atividade atividade = new Atividade("Calculo 1", "bacana");
-        db.execSQL(createInsertAtividadesQuery(atividade.getNome(),atividade.getDescricao(),String.valueOf(atividade.getUltimaAtualizacao()),String.valueOf(atividade.getDataCriacao()),atividade.getTempoInvestido()));
+       // Atividade atividade = new Atividade("Calculo 1", "bacana");
+        // db.execSQL(createInsertAtividadesQuery(atividade.getNome(),atividade.getDescricao(),String.valueOf(atividade.getUltimaAtualizacao()),String.valueOf(atividade.getDataCriacao()),atividade.getTempoInvestido()));
 
 
     }

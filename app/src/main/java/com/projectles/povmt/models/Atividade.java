@@ -5,7 +5,7 @@ import java.util.Date;
 /**
  * Created by Nicolas on 17/07/2016.
  */
-public class Atividade {
+public class Atividade implements Comparable<Atividade> {
     private long id;
     private float tempoInvestido;
     private String nome;
@@ -72,5 +72,13 @@ public class Atividade {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+
+    @Override
+    public int compareTo(Atividade o) {
+        if (getUltimaAtualizacao() == null || o.getUltimaAtualizacao() == null)
+            return 0;
+        return getUltimaAtualizacao().compareTo(o.getUltimaAtualizacao());
     }
 }

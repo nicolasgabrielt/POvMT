@@ -15,12 +15,15 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.projectles.povmt.DAO.AtividadeDAO;
 import com.projectles.povmt.R;
 import com.projectles.povmt.adapters.AtividadesAdapter;
 import com.projectles.povmt.models.Atividade;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.github.yavski.fabspeeddial.FabSpeedDial;
@@ -30,9 +33,10 @@ public class ListAtividades extends AppCompatActivity {
 
 
     private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
+    private AtividadesAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private AtividadeDAO dao;
+    private List<Atividade> atividades;
 
 
     @Override
@@ -52,13 +56,6 @@ public class ListAtividades extends AppCompatActivity {
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        // specify an adapter (see also next example)
-        dao = new AtividadeDAO(this);
-        List<Atividade> myDataset = dao.listaTodos();
-        mAdapter = new AtividadesAdapter(myDataset, this);
-        mRecyclerView.setAdapter(mAdapter);
-
-
         FabSpeedDial fabSpeedDial = (FabSpeedDial) findViewById(R.id.btn_add);
         fabSpeedDial.setMenuListener(new SimpleMenuListenerAdapter() {
             @Override
@@ -76,6 +73,18 @@ public class ListAtividades extends AppCompatActivity {
         });
 
 
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // specify an adapter (see also next example)
+        dao = new AtividadeDAO(getApplicationContext());
+        List<Atividade> myDataset = dao.listaTodos();
+        Collections.reverse(myDataset);
+        mAdapter = new AtividadesAdapter(myDataset, this);
+        mRecyclerView.setAdapter(mAdapter);
     }
 
 
@@ -98,6 +107,10 @@ public class ListAtividades extends AppCompatActivity {
 
                 Atividade atividade = new Atividade(edtNome.getText().toString(), edtDescricao.getText().toString());
                 dao.adiciona(atividade);
+                mAdapter.swap(dao.listaTodos());
+                Toast.makeText(getApplicationContext(), "Objeto salvo com sucesso! " + "Numero de Elementos : " + dao.listaTodos().size() , Toast.LENGTH_LONG)
+                        .show();
+
 
 
             }
