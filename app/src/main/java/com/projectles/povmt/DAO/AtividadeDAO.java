@@ -1,7 +1,6 @@
 package com.projectles.povmt.DAO;
 
 
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -40,13 +39,11 @@ public class AtividadeDAO {
         this.context = context;
     }
 
-    private String getStringofDate(Date date){
+    private String getStringofDate(Date date) {
         SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//dd/MM/yyyy
         String strDate = sdfDate.format(date);
         return strDate;
     }
-
-
 
 
     private Date getDateofString(String date) throws ParseException {
@@ -54,6 +51,9 @@ public class AtividadeDAO {
         Date parsedDate = sdfDate.parse(date);
         return parsedDate;
     }
+
+
+
 
 
     /**
@@ -65,7 +65,7 @@ public class AtividadeDAO {
         values.put(NOME, atividade.getNome());
         values.put("descricao", atividade.getDescricao());
         values.put(DATA, getStringofDate(atividade.getDataCriacao()));
-        values.put(TEMPO_INVESTIDO,atividade.getTempoInvestido());
+        values.put(TEMPO_INVESTIDO, atividade.getTempoInvestido());
         values.put(ULTIMA_ATUALIZACAO, getStringofDate(atividade.getUltimaAtualizacao()));
 
         // Instancia uma conexão com o banco de dados, em modo de gravação
@@ -73,6 +73,27 @@ public class AtividadeDAO {
         // Insere o registro no banco de dados
         long id = db.insert(TABLE, null, values);
         atividade.setId(id);
+        // Encerra a conexão com o banco de dados
+        db.close();
+}
+
+
+    /**
+     * Altera o registro no banco de dados.
+     */
+    public void atualiza(Atividade atividade) {
+        // Encapsula no objeto do tipo ContentValues os valores a serem atualizados no banco de dados
+        ContentValues values = new ContentValues();
+        values.put(NOME, atividade.getNome());
+        values.put("descricao", atividade.getDescricao());
+        values.put(DATA, getStringofDate(atividade.getDataCriacao()));
+        values.put(TEMPO_INVESTIDO, atividade.getTempoInvestido());
+        values.put(ULTIMA_ATUALIZACAO, getStringofDate(atividade.getUltimaAtualizacao()));
+
+        // Instancia uma conexão com o banco de dados, em modo de gravação
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        // Atualiza o registro no banco de dados
+        db.update(TABLE, values, "_id=?", new String[]{String.valueOf(atividade.getId())});
         // Encerra a conexão com o banco de dados
         db.close();
     }
@@ -113,10 +134,6 @@ public class AtividadeDAO {
     }
 
 
-
-
-
-
     /**
      * Lista todos os registros da tabela “objeto_emprestado”
      */
@@ -155,7 +172,6 @@ public class AtividadeDAO {
         // Retorna uma lista com os objetos consultados
         return atividades;
     }
-
 
 
 }

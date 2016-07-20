@@ -1,10 +1,7 @@
 package com.projectles.povmt.activitys;
 
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,16 +17,17 @@ import android.widget.Toast;
 import com.projectles.povmt.DAO.AtividadeDAO;
 import com.projectles.povmt.R;
 import com.projectles.povmt.adapters.AtividadesAdapter;
+import com.projectles.povmt.adapters.DialogAtividadeAdapter;
 import com.projectles.povmt.models.Atividade;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 
-public class ListAtividades extends AppCompatActivity {
+public class ListAtividadesActivity extends AppCompatActivity {
 
 
     private RecyclerView mRecyclerView;
@@ -67,6 +65,8 @@ public class ListAtividades extends AppCompatActivity {
                     onCreateDialog();
                     mAdapter.notifyDataSetChanged();
 
+                }else{
+                    onCreateDialogTi();
                 }
                 return true;
             }
@@ -81,10 +81,80 @@ public class ListAtividades extends AppCompatActivity {
         super.onResume();
         // specify an adapter (see also next example)
         dao = new AtividadeDAO(getApplicationContext());
-        List<Atividade> myDataset = dao.listaTodos();
-        Collections.reverse(myDataset);
-        mAdapter = new AtividadesAdapter(myDataset, this);
+        atividades = dao.listaTodos();
+        Collections.reverse(atividades);
+        mAdapter = new AtividadesAdapter(atividades, this);
         mRecyclerView.setAdapter(mAdapter);
+    }
+
+
+
+    public void onCreateDialogTi() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        // Get the layout inflater
+        LayoutInflater inflater = this.getLayoutInflater();
+
+        // Inflate and set the layout for the dialog
+        // Pass null as the parent view because its going in the dialog layout
+        final View dialogView = inflater.inflate(R.layout.adicionar_ti_dialog, null);
+        builder.setView(dialogView);
+        final EditText edtTi = (EditText) dialogView.findViewById(R.id.edtxt_qnt_horas);
+
+        // Add action buttons
+        builder.setPositiveButton("Adicionar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int id) {
+
+                createDialogAtividades((float)Double.parseDouble(edtTi.getText().toString()));
+
+
+            }
+        })
+                .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+
+
+    private void createDialogAtividades(final float ti){
+        final DialogAtividadeAdapter adapter = new DialogAtividadeAdapter(this,atividades);
+
+        new AlertDialog.Builder(this)
+                .setAdapter(adapter, new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                            Atividade item = adapter.getItem(which);
+                            item.setTempoInvestido(item.getTempoInvestido() + ti);
+                            item.setUltimaAtualizacao(new Date());
+                            dao.atualiza(item);
+                            mAdapter.swap(dao.listaTodos());
+
+                        Toast.makeText(getApplicationContext(), "Ti salvo com sucesso! " + item.getUltimaAtualizacao().toString() , Toast.LENGTH_LONG)
+                                .show();
+
+                    }
+                })
+                .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .setTitle("Selecione uma atividade")
+                .setCancelable(false)
+                .show();
     }
 
 
@@ -95,7 +165,7 @@ public class ListAtividades extends AppCompatActivity {
 
         // Inflate and set the layout for the dialog
         // Pass null as the parent view because its going in the dialog layout
-        final View dialogView = inflater.inflate(R.layout.adicionar_atividade_fragment, null);
+        final View dialogView = inflater.inflate(R.layout.adicionar_atividade_dialog, null);
         builder.setView(dialogView);
         final EditText edtNome = (EditText) dialogView.findViewById(R.id.edtxt_nome);
         final EditText edtDescricao = (EditText) dialogView.findViewById(R.id.edtxt_descricao);

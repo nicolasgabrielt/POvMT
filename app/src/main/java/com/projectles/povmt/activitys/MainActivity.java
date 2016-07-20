@@ -15,7 +15,6 @@ import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.projectles.povmt.R;
-import com.projectles.povmt.activitys.ListAtividades;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Intent intent = new Intent(this, ListAtividades.class);
+        Intent intent = new Intent(this, ListAtividadesActivity.class);
         startActivity(intent);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);

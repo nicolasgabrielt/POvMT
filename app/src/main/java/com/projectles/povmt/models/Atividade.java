@@ -1,12 +1,14 @@
 package com.projectles.povmt.models;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by Nicolas on 17/07/2016.
  */
-public class Atividade implements Comparable<Atividade> {
-    private long id;
+public class Atividade implements Comparable<Atividade> ,Serializable {
+    private static final long serialVersionUID = 1L;
+    private Long id;
     private float tempoInvestido;
     private String nome;
     private Date ultimaAtualizacao;
@@ -33,11 +35,11 @@ public class Atividade implements Comparable<Atividade> {
         this.nome = nome;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -47,6 +49,7 @@ public class Atividade implements Comparable<Atividade> {
 
     public void setTempoInvestido(float tempoInvestido) {
         this.tempoInvestido = tempoInvestido;
+
     }
 
     public Date getUltimaAtualizacao() {
