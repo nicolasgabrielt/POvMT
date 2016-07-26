@@ -5,15 +5,12 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
+import com.projectles.povmt.models.Util;
 import com.projectles.povmt.models.Atividade;
 
 
@@ -39,22 +36,6 @@ public class AtividadeDAO {
         this.context = context;
     }
 
-    private String getStringofDate(Date date) {
-        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//dd/MM/yyyy
-        String strDate = sdfDate.format(date);
-        return strDate;
-    }
-
-
-    private Date getDateofString(String date) throws ParseException {
-        SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//dd/MM/yyyy
-        Date parsedDate = sdfDate.parse(date);
-        return parsedDate;
-    }
-
-
-
-
 
     /**
      * Adiciona objeto no banco de dados.
@@ -64,9 +45,8 @@ public class AtividadeDAO {
         ContentValues values = new ContentValues();
         values.put(NOME, atividade.getNome());
         values.put("descricao", atividade.getDescricao());
-        values.put(DATA, getStringofDate(atividade.getDataCriacao()));
-        values.put(TEMPO_INVESTIDO, atividade.getTempoInvestido());
-        values.put(ULTIMA_ATUALIZACAO, getStringofDate(atividade.getUltimaAtualizacao()));
+        values.put(DATA, Util.getStringofDate(atividade.getDataCriacao()));
+        values.put(ULTIMA_ATUALIZACAO, Util.getStringofDate(atividade.getUltimaAtualizacao()));
 
         // Instancia uma conexão com o banco de dados, em modo de gravação
         SQLiteDatabase db = dbHelper.getWritableDatabase();
@@ -86,9 +66,8 @@ public class AtividadeDAO {
         ContentValues values = new ContentValues();
         values.put(NOME, atividade.getNome());
         values.put("descricao", atividade.getDescricao());
-        values.put(DATA, getStringofDate(atividade.getDataCriacao()));
-        values.put(ULTIMA_ATUALIZACAO, getStringofDate(atividade.getUltimaAtualizacao()));
-        values.put(TEMPO_INVESTIDO, atividade.getTempoInvestido());
+        values.put(DATA, Util.getStringofDate(atividade.getDataCriacao()));
+        values.put(ULTIMA_ATUALIZACAO, Util.getStringofDate(atividade.getUltimaAtualizacao()));
 
 
         // Instancia uma conexão com o banco de dados, em modo de gravação
@@ -116,9 +95,8 @@ public class AtividadeDAO {
                 atividade.setId(c.getLong(c.getColumnIndex(ID)));
                 atividade.setNome(c.getString(c.getColumnIndex(NOME)));
                 atividade.setDescricao(c.getString(c.getColumnIndex("descricao")));
-                atividade.setDataCriacao(getDateofString(c.getString(c.getColumnIndex(DATA))));
-                atividade.setUltimaAtualizacao(getDateofString(c.getString(c.getColumnIndex(ULTIMA_ATUALIZACAO))));
-                atividade.setTempoInvestido(c.getFloat(c.getColumnIndex(TEMPO_INVESTIDO)));
+                atividade.setDataCriacao(Util.getDateofString(c.getString(c.getColumnIndex(DATA))));
+                atividade.setUltimaAtualizacao(Util.getDateofString(c.getString(c.getColumnIndex(ULTIMA_ATUALIZACAO))));
 
                 return atividade;
             }
@@ -156,10 +134,8 @@ public class AtividadeDAO {
                 atividade.setId(c.getLong(c.getColumnIndex(ID)));
                 atividade.setNome(c.getString(c.getColumnIndex(NOME)));
                 atividade.setDescricao(c.getString(c.getColumnIndex("descricao")));
-                atividade.setDataCriacao(getDateofString(c.getString(c.getColumnIndex(DATA))));
-                atividade.setUltimaAtualizacao(getDateofString(c.getString(c.getColumnIndex(ULTIMA_ATUALIZACAO))));
-                atividade.setTempoInvestido(c.getFloat(c.getColumnIndex(TEMPO_INVESTIDO)));
-
+                atividade.setDataCriacao(Util.getDateofString(c.getString(c.getColumnIndex(DATA))));
+                atividade.setUltimaAtualizacao(Util.getDateofString(c.getString(c.getColumnIndex(ULTIMA_ATUALIZACAO))));
                 atividades.add(atividade);
             }
         } catch (ParseException e) {

@@ -4,7 +4,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -15,18 +14,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.projectles.povmt.DAO.AtividadeDAO;
+import com.projectles.povmt.DAO.TempoInvestidoDAO;
 import com.projectles.povmt.R;
-import com.projectles.povmt.adapters.AtividadesAdapter;
 import com.projectles.povmt.models.Atividade;
+import com.projectles.povmt.models.TempoInvestido;
+import com.projectles.povmt.models.Util;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.Date;
 
 public class atividadesDetalhesActivity extends AppCompatActivity {
     private Atividade atividade;
     private AtividadeDAO dao;
+    private TempoInvestidoDAO daoTempo;
     private TextView descricaoAtividade;
     private TextView nomeAtividade;
     private TextView dataUpdate;
@@ -68,23 +68,15 @@ public class atividadesDetalhesActivity extends AppCompatActivity {
         super.onStart();
         // specify an adapter (see also next example)
         dao = new AtividadeDAO(getApplicationContext());
+        daoTempo = new TempoInvestidoDAO(getApplicationContext());
         nomeAtividade.setText(atividade.getNome());
         descricaoAtividade.setText(atividade.getDescricao());
-        tempoEstimado.setText(String.valueOf(atividade.getTempoInvestido()));
-        dataUpdate.setText(getStringofDate(atividade.getUltimaAtualizacao()));
-        dataCriacao.setText(getStringofDate(atividade.getDataCriacao()));
-        Intent intent=new Intent();
-        intent.putExtra("LISTA", (Serializable) dao.listaTodos());
-        setResult(RESULT_OK, intent);
+        tempoEstimado.setText(String.valueOf(atividade.getTempoTotalInvestido(getApplicationContext())));
+        dataUpdate.setText(Util.getStringofDateHoraDiaAno(atividade.getUltimaAtualizacao()));
+        dataCriacao.setText(Util.getStringofDateHoraDiaAno(atividade.getDataCriacao()));
 
     }
 
-
-    private String getStringofDate(Date date) {
-        SimpleDateFormat sdfDate = new SimpleDateFormat("HH:mm dd/MM/yyyy");//dd/MM/yyyy
-        String strDate = sdfDate.format(date);
-        return strDate;
-    }
 
 
 
@@ -105,11 +97,12 @@ public class atividadesDetalhesActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int id) {
                 if (!(edtTi.getText().equals(null)) && !(edtTi.getText().toString().trim().equals("")) ){
                     float ti = (float) Double.parseDouble(edtTi.getText().toString());
-                    atividade.setTempoInvestido(atividade.getTempoInvestido() + ti);
+                    TempoInvestido tempo = new TempoInvestido(ti,atividade.getId());
+                    atividade.addTempoInvestido(getApplicationContext(),tempo);
                     atividade.setUltimaAtualizacao(new Date());
                     dao.atualiza(atividade);
-                    tempoEstimado.setText(String.valueOf(atividade.getTempoInvestido()));
-                    dataUpdate.setText(getStringofDate(atividade.getUltimaAtualizacao()));
+                    tempoEstimado.setText(String.valueOf(atividade.getTempoTotalInvestido(getApplicationContext())));
+                    dataUpdate.setText(Util.getStringofDateHoraDiaAno(atividade.getUltimaAtualizacao()));
                 }else{
                     Toast.makeText(getApplicationContext(),"Preencha os campos corretamente!", Toast.LENGTH_LONG).show();
                 }

@@ -21,7 +21,7 @@ public class DBHelper  extends SQLiteOpenHelper {
     // Nome do banco de dados
     private static final String NOME_DO_BANCO = "dados";
     // Versão atual do banco de dados
-    private static final int VERSAO_DO_BANCO = 2;
+    private static final int VERSAO_DO_BANCO = 3;
     private static Context mContext;
 
     public DBHelper(Context context) {
@@ -42,13 +42,21 @@ public class DBHelper  extends SQLiteOpenHelper {
                 ",descricao TEXT NOT NULL" +
                 ","+ ULTIMA_ATUALIZACAO +" DATETIME NOT NULL" +
                 ","+ DATA +" DATETIME NOT NULL" +
-                ","+ TEMPO_INVESTIDO +" REAL NOT NULL" +
                 ");";
         db.execSQL(sql);
 
 
+        String sql1 = "CREATE TABLE tempoInvestido(" +
+                ID + " INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT" +
+                ","+ TEMPO_INVESTIDO +" REAL NOT NULL" +
+                ","+ DATA +" DATETIME NOT NULL" +","
+                + "id_atividade" + " integer,"
+                + " FOREIGN KEY ("+"id_atividade"+") REFERENCES "+ "atividade" +"("+ID+"));";
+        db.execSQL(sql1);
+
+
        // Atividade atividade = new Atividade("Calculo 1", "bacana");
-        // db.execSQL(createInsertAtividadesQuery(atividade.getNome(),atividade.getDescricao(),String.valueOf(atividade.getUltimaAtualizacao()),String.valueOf(atividade.getDataCriacao()),atividade.getTempoInvestido()));
+        // db.execSQL(createInsertAtividadesQuery(atividade.getNome(),atividade.getDescricao(),String.valueOf(atividade.getUltimaAtualizacao()),String.valueOf(atividade.getDataCriacao()),atividade.getTempoTotalInvestido()));
 
 
     }
@@ -61,6 +69,8 @@ public class DBHelper  extends SQLiteOpenHelper {
 
         String sql = "DROP TABLE IF EXISTS atividade;";
         db.execSQL(sql);
+        String sql1 = "DROP TABLE IF EXISTS tempoInvestido;";
+        db.execSQL(sql1);
         onCreate(db);
     }
 

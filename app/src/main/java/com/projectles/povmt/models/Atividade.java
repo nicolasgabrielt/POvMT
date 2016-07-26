@@ -1,9 +1,14 @@
 package com.projectles.povmt.models;
 
-import android.util.Log;
+import android.content.Context;
+
+import com.projectles.povmt.DAO.TempoInvestidoDAO;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Nicolas on 17/07/2016.
@@ -11,8 +16,8 @@ import java.util.Date;
 public class Atividade implements Comparable<Atividade> , Serializable {
     private static final long serialVersionUID = 1L;
     private Long id;
-    private float tempoInvestido;
     private String nome;
+    private List<TempoInvestido> temposInvestidos;
     private Date ultimaAtualizacao;
     private Date dataCriacao;
     private String descricao;
@@ -22,11 +27,12 @@ public class Atividade implements Comparable<Atividade> , Serializable {
         this.descricao = descricao;
         this.ultimaAtualizacao = new Date();
         this.dataCriacao = new Date();
-        this.tempoInvestido = 0;
+        this.temposInvestidos = new ArrayList<TempoInvestido>();
     }
 
 
     public Atividade() {
+        this.temposInvestidos = new ArrayList<TempoInvestido>();
     }
 
     public String getNome() {
@@ -45,13 +51,31 @@ public class Atividade implements Comparable<Atividade> , Serializable {
         this.id = id;
     }
 
-    public float getTempoInvestido() {
-        return tempoInvestido;
+    public List<TempoInvestido> getTemposInvestidos(Context context) {
+        TempoInvestidoDAO dao = new TempoInvestidoDAO(context);
+        this.temposInvestidos = dao.getTempoInvestidoByIdAtividade(id);
+        return temposInvestidos;
     }
 
-    public void setTempoInvestido(float tempoInvestido) {
-        this.tempoInvestido = tempoInvestido;
+
+    public void setTemposInvestidos(List<TempoInvestido> temposInvestidos) {
+        this.temposInvestidos = temposInvestidos;
     }
+
+    public void addTempoInvestido(Context context,TempoInvestido tempo){
+        TempoInvestidoDAO dao = new TempoInvestidoDAO(context);
+        dao.adiciona(tempo);
+    }
+
+
+    public float getTempoTotalInvestido(Context context) {
+        float ti = 0;
+        for (int i = 0; i < getTemposInvestidos(context).size(); i++) {
+             ti += getTemposInvestidos(context).get(i).getTi();
+        }
+        return ti;
+    }
+
 
     public Date getUltimaAtualizacao() {
         return ultimaAtualizacao;

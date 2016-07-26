@@ -4,21 +4,17 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.projectles.povmt.DAO.AtividadeDAO;
 import com.projectles.povmt.R;
+import com.projectles.povmt.models.Util;
 import com.projectles.povmt.activitys.atividadesDetalhesActivity;
 import com.projectles.povmt.models.Atividade;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -86,8 +82,8 @@ public class AtividadesAdapter extends RecyclerView.Adapter<AtividadesAdapter.Vi
         final Atividade atividade =  mDataset.get(position);
 
         holder.nomeAtividadeTxt.setText(atividade.getNome());
-        holder.qntHorasTxt.setText( String.valueOf(atividade.getTempoInvestido()));
-        holder.ultimaAtualizacao.setText(getStringofDate(atividade.getUltimaAtualizacao()));
+        holder.qntHorasTxt.setText( String.valueOf(atividade.getTempoTotalInvestido(context)));
+        holder.ultimaAtualizacao.setText(Util.getStringofDateDiaAno(atividade.getUltimaAtualizacao()));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,11 +97,6 @@ public class AtividadesAdapter extends RecyclerView.Adapter<AtividadesAdapter.Vi
 
     }
 
-    private String getStringofDate(Date date){
-        SimpleDateFormat sdfDate = new SimpleDateFormat("dd/MM/yyyy");//dd/MM/yyyy
-        String strDate = sdfDate.format(date);
-        return strDate;
-    }
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override
