@@ -45,6 +45,8 @@ public class DBHelper  extends SQLiteOpenHelper {
                 ","+ TEMPO_INVESTIDO +" REAL NOT NULL" +
                 ");";
         db.execSQL(sql);
+
+
        // Atividade atividade = new Atividade("Calculo 1", "bacana");
         // db.execSQL(createInsertAtividadesQuery(atividade.getNome(),atividade.getDescricao(),String.valueOf(atividade.getUltimaAtualizacao()),String.valueOf(atividade.getDataCriacao()),atividade.getTempoInvestido()));
 

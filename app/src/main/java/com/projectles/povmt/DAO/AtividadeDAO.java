@@ -87,8 +87,9 @@ public class AtividadeDAO {
         values.put(NOME, atividade.getNome());
         values.put("descricao", atividade.getDescricao());
         values.put(DATA, getStringofDate(atividade.getDataCriacao()));
-        values.put(TEMPO_INVESTIDO, atividade.getTempoInvestido());
         values.put(ULTIMA_ATUALIZACAO, getStringofDate(atividade.getUltimaAtualizacao()));
+        values.put(TEMPO_INVESTIDO, atividade.getTempoInvestido());
+
 
         // Instancia uma conexão com o banco de dados, em modo de gravação
         SQLiteDatabase db = dbHelper.getWritableDatabase();

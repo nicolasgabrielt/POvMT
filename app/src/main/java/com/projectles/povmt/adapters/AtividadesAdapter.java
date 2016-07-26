@@ -1,6 +1,8 @@
 package com.projectles.povmt.adapters;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,6 +12,7 @@ import android.widget.TextView;
 
 import com.projectles.povmt.DAO.AtividadeDAO;
 import com.projectles.povmt.R;
+import com.projectles.povmt.activitys.atividadesDetalhesActivity;
 import com.projectles.povmt.models.Atividade;
 
 import java.text.SimpleDateFormat;
@@ -26,17 +29,20 @@ public class AtividadesAdapter extends RecyclerView.Adapter<AtividadesAdapter.Vi
 
     private List<Atividade> mDataset;
     private Context context;
+    private Activity activity;
 
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public AtividadesAdapter(List<Atividade> myDataset , Context context) {
+    public AtividadesAdapter(List<Atividade> myDataset , Activity context) {
         mDataset = myDataset;
         this.context = context;
+        this.activity = context;
     }
 
 
     public void swap(List<Atividade> datas){
         mDataset.clear();
+        Collections.sort(datas);
         Collections.reverse(datas);
         mDataset.addAll(datas);
         notifyDataSetChanged();
@@ -82,6 +88,16 @@ public class AtividadesAdapter extends RecyclerView.Adapter<AtividadesAdapter.Vi
         holder.nomeAtividadeTxt.setText(atividade.getNome());
         holder.qntHorasTxt.setText( String.valueOf(atividade.getTempoInvestido()));
         holder.ultimaAtualizacao.setText(getStringofDate(atividade.getUltimaAtualizacao()));
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, atividadesDetalhesActivity.class);
+                intent.putExtra("ATIVIDADE", atividade);
+                activity.startActivityForResult(intent, 1);
+
+            }
+        });
 
     }
 
