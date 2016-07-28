@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
@@ -16,32 +17,21 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Relatório"
-        android:id="@+id/txt_relatorio"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Semana Atual"
         android:id="@+id/txt_semana_atual"
-        android:layout_below="@+id/txt_relatorio"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
-    <com.db.chart.view.BaseBarChartView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/graph_curr_week"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
+    <com.db.chart.view.BarChartView
+        android:layout_width="match_parent"
+        android:layout_height="113dp"
+        android:id="@+id/graph_curr_wk"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/txt_semana_atual"
-        android:layout_marginBottom="130dp" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/txt_semana_atual" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -49,42 +39,40 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Semana passada"
         android:id="@+id/txt_semana_passada"
-        android:layout_below="@+id/graph_curr_week"
+        android:layout_below="@+id/graph_curr_wk"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="1dp" />
+        android:layout_alignParentStart="true" />
 
-    <com.db.chart.view.BaseBarChartView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/graph_last_week"
-        android:layout_below="@+id/txt_semana_passada"
+    <com.db.chart.view.BarChartView
+        android:layout_width="match_parent"
+        android:layout_height="113dp"
+        android:id="@+id/graph_last_wk"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginBottom="130dp" />
+        android:layout_below="@+id/txt_semana_passada"
+        android:layout_alignParentTop="false"
+        android:layout_alignWithParentIfMissing="false" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Duas semanas atras"
+        android:text="Duas semanas atrás"
         android:id="@+id/txt_2_weeks_ago"
-        android:layout_marginTop="1dp"
-        android:layout_below="@+id/graph_last_week"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
-    <com.db.chart.view.BaseBarChartView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/graph_two_weeks"
+    <com.db.chart.view.BarChartView
+        android:layout_width="match_parent"
+        android:layout_height="113dp"
+        android:id="@+id/graph_two_wks"
+        android:layout_below="@+id/txt_2_weeks_ago"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_below="@+id/txt_2_weeks_ago"
-        android:layout_marginBottom="35dp" />
-</RelativeLayout>
+        android:layout_alignParentBottom="true" />
+
+</LinearLayout>

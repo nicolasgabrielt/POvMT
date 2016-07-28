@@ -1,10 +1,16 @@
 package com.projectles.povmt.DAO;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.projectles.povmt.models.Atividade;
+import com.projectles.povmt.models.TempoInvestido;
+import com.projectles.povmt.models.Util;
+
+import java.util.Calendar;
+import java.util.Random;
 
 /**
  * Created by Nicolas on 17/07/2016.
@@ -54,11 +60,52 @@ public class DBHelper  extends SQLiteOpenHelper {
                 + " FOREIGN KEY ("+"id_atividade"+") REFERENCES "+ "atividade" +"("+ID+"));";
         db.execSQL(sql1);
 
+        Atividade[] atividades = new Atividade[]{null,null,null};
 
-       // Atividade atividade = new Atividade("Calculo 1", "bacana");
-        // db.execSQL(createInsertAtividadesQuery(atividade.getNome(),atividade.getDescricao(),String.valueOf(atividade.getUltimaAtualizacao()),String.valueOf(atividade.getDataCriacao()),atividade.getTempoTotalInvestido()));
+        Calendar c = Calendar.getInstance();
+        Atividade atividade = new Atividade("Cálculo 1", "bacana");
+        ContentValues values = new ContentValues();
+        values.put("nome", atividade.getNome());
+        values.put("descricao", atividade.getDescricao());
+        values.put("dataCriacao", Util.getStringofDate(atividade.getDataCriacao()));
+        values.put("ultimaAtualizacao", Util.getStringofDate(atividade.getUltimaAtualizacao()));
+        long id = db.insert("atividade", null, values);
+        atividade.setId(id);
+        atividades[0] = atividade;
 
+        atividade = new Atividade("Física 1", "bacana");
+        values.clear();
+        values.put("nome", atividade.getNome());
+        values.put("descricao", atividade.getDescricao());
+        values.put("dataCriacao", Util.getStringofDate(atividade.getDataCriacao()));
+        values.put("ultimaAtualizacao", Util.getStringofDate(atividade.getUltimaAtualizacao()));
+        id = db.insert("atividade", null, values);
+        atividade.setId(id);
+        atividades[1] = atividade;
 
+        atividade = new Atividade("História 1", "bacana");
+        values.clear();
+        values.put("nome", atividade.getNome());
+        values.put("descricao", atividade.getDescricao());
+        values.put("dataCriacao", Util.getStringofDate(atividade.getDataCriacao()));
+        values.put("ultimaAtualizacao", Util.getStringofDate(atividade.getUltimaAtualizacao()));
+        id = db.insert("atividade", null, values);
+        atividade.setId(id);
+        atividades[2] = atividade;
+
+        Random r = new Random();
+
+        for(int i=1; i <= 30; i++ ) {
+            TempoInvestido ti = new TempoInvestido(r.nextFloat()*5f, atividades[i%3].getId());
+            ti.setData(c.getTime());
+            values.clear();
+            values.put("dataCriacao", Util.getStringofDate(ti.getData()));
+            values.put("tempoInvestido",ti.getTi());
+            values.put("id_atividade", ti.getId_atividade());
+            id = db.insert("tempoInvestido", null, values);
+            ti.setId(id);
+            c.add(Calendar.DATE,-1);
+        }
     }
 
     /**
