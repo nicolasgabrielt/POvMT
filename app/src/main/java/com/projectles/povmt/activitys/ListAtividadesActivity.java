@@ -1,6 +1,7 @@
 package com.projectles.povmt.activitys;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
@@ -172,6 +173,8 @@ public class ListAtividadesActivity extends AppCompatActivity
 
         if (id == R.id.nav_relatorio_semanal) {
             // Handle the camera action
+            Intent intent = new Intent(this, RelatorioSemanalActivity.class);
+            startActivity(intent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

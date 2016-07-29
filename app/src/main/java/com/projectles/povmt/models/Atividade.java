@@ -5,9 +5,11 @@ import android.content.Context;
 import com.projectles.povmt.DAO.TempoInvestidoDAO;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 /**
@@ -67,6 +69,22 @@ public class Atividade implements Comparable<Atividade> , Serializable {
         dao.adiciona(tempo);
     }
 
+
+    public float getTempoTotalInvestidoSemanal(Context context) {
+
+        GregorianCalendar calendar = new GregorianCalendar();
+        SimpleDateFormat dt = new SimpleDateFormat("dd/MM/yyyy");
+        calendar.add(GregorianCalendar.DATE, -7);
+
+        float ti = 0;
+        for (int i = 0; i < getTemposInvestidos(context).size(); i++) {
+            TempoInvestido tempo = getTemposInvestidos(context).get(i);
+            if(tempo.getData().after(calendar.getTime())) {
+                ti += getTemposInvestidos(context).get(i).getTi();
+            }
+        }
+        return ti;
+    }
 
     public float getTempoTotalInvestido(Context context) {
         float ti = 0;
