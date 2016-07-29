@@ -172,9 +172,11 @@ public class ListAtividadesActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_relatorio_semanal) {
+
             // Handle the camera action
             Intent intent = new Intent(this, RelatorioSemanalActivity.class);
             startActivity(intent);
+
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
