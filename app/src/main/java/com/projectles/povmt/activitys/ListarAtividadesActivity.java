@@ -6,7 +6,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.support.v7.widget.RecyclerView.LayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -20,26 +20,33 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.projectles.povmt.DAO.AtividadeDAO;
+import com.android.volley.Response.Listener;
 import com.projectles.povmt.R;
 import com.projectles.povmt.adapters.AtividadesAdapter;
+import com.projectles.povmt.api.shared.RequestManager;
+import com.projectles.povmt.api.RestClient;
 import com.projectles.povmt.models.Atividade;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public class ListAtividadesActivity extends AppCompatActivity
+public class ListarAtividadesActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private RecyclerView mRecyclerView;
-    private AtividadesAdapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
-    private AtividadeDAO dao;
+    private RecyclerView recyclerView;
+    private AtividadesAdapter adapter;
+
+    private RestClient client = new RestClient(this);
     private List<Atividade> atividades;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_listatividades_activity);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -47,47 +54,48 @@ public class ListAtividadesActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+
+        drawer.addDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-        mRecyclerView = (RecyclerView) findViewById(R.id.list_atividades);
+        recyclerView = (RecyclerView) findViewById(R.id.list_atividades);
 
-        // use this setting to improve performance if you know that changes
-        // in content do not change the layout size of the RecyclerView
-        mRecyclerView.setHasFixedSize(true);
+        // Use this setting to improve performance if you know that changes in content do not change
+        // the layout size of the RecyclerView.
+        recyclerView.setHasFixedSize(true);
 
-        // use a linear layout manager
-        mLayoutManager = new LinearLayoutManager(this);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-
-
+        // Use a linear layout manager
+        LayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.btn_add);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 createDialogNewAtividade();
-                mAdapter.notifyDataSetChanged();
+                adapter.notifyDataSetChanged();
             }
         });
 
+        // Get the activities list from server
+        client.atividades.getAtividades(new Listener<Atividade[]>() {
+            @Override
+            public void onResponse(Atividade[] response) {
+                atividades = new ArrayList<>();
+                atividades.addAll(Arrays.asList(response));
 
-        dao = new AtividadeDAO(getApplicationContext());
-        atividades = dao.listaTodos();
-        Collections.sort(atividades);
-        Collections.reverse(atividades);
-        mAdapter = new AtividadesAdapter(atividades, this);
-        mRecyclerView.setAdapter(mAdapter);
-
-
-
+                Collections.sort(atividades, Collections.<Atividade>reverseOrder());
+                adapter = new AtividadesAdapter(atividades, client.getContext());
+                recyclerView.setAdapter(adapter);
+            }
+        });
     }
-
 
     public void createDialogNewAtividade() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
         // Get the layout inflater
         LayoutInflater inflater = this.getLayoutInflater();
 
@@ -104,12 +112,26 @@ public class ListAtividadesActivity extends AppCompatActivity
             public void onClick(DialogInterface dialog, int id) {
                 String nome = edtNome.getText().toString();
                 String descricao = edtDescricao.getText().toString();
-                if(nome.trim().equals("") || descricao.trim().equals("")){
-                    Toast.makeText(getApplicationContext(),"Algum dos campos esta vazio!", Toast.LENGTH_LONG).show();
+
+                if(nome.trim().isEmpty() || descricao.trim().isEmpty()){
+                    Toast.makeText(getApplicationContext(),     "Algum dos campos esta vazio!", Toast.LENGTH_LONG).show();
                 } else {
-                    Atividade atividade = new Atividade(edtNome.getText().toString(), edtDescricao.getText().toString());
-                    dao.adiciona(atividade);
-                    mAdapter.swap(dao.listaTodos());
+                    Map<String, String> params = new HashMap<>();
+                    // TODO: Fix this when the user module is created
+                    params.put("usuFk", "1");
+                    params.put("name", nome);
+                    params.put("description", descricao);
+
+                    client.atividades.addAtividade(new Listener<Atividade[]>() {
+                        @Override
+                        public void onResponse(Atividade[] response) {
+                            atividades = new ArrayList<>();
+                            atividades.addAll(Arrays.asList(response));
+
+                            Collections.sort(atividades, Collections.<Atividade>reverseOrder());
+                            adapter.swap(atividades);
+                        }
+                    }, params);
                 }
             }
         })
@@ -124,10 +146,16 @@ public class ListAtividadesActivity extends AppCompatActivity
 
     @Override
     protected void onRestart() {
-        atividades = dao.listaTodos();
-        mAdapter.swap(atividades);
-        mAdapter.notifyDataSetChanged();
-        Log.i("ENTROU","onRestart");
+        client.atividades.getAtividades(new Listener<Atividade[]>() {
+            @Override
+            public void onResponse(Atividade[] response) {
+                atividades = new ArrayList<>();
+                atividades.addAll(Arrays.asList(response));
+
+                Collections.sort(atividades, Collections.<Atividade>reverseOrder());
+                adapter.swap(atividades);
+            }
+        });
         super.onRestart();
     }
 
@@ -151,21 +179,17 @@ public class ListAtividadesActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+        // Handle action bar item clicks here. The action bar will.
+        // Automatically handle clicks on the Home/Up button, so long as you specify a parent
+        // activity in AndroidManifest.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        // Noinspection SimplifiableIfStatement
+        return id == R.id.action_settings || super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
+    @SuppressWarnings("StatementWithEmptyBody")
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
@@ -173,9 +197,16 @@ public class ListAtividadesActivity extends AppCompatActivity
         if (id == R.id.nav_relatorio_semanal) {
             // Handle the camera action
         }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        RequestManager.getInstance(this).stopRequestsInRequestQueueByTag(
+                getString(R.string.activities_requests)
+        );
     }
 }

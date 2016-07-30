@@ -29,16 +29,14 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 // This method will be executed once the timer is over
                 // Start your app main activity
-                Intent i = new Intent(MainActivity.this, ListAtividadesActivity.class);
+                Intent i = new Intent(MainActivity.this, ListarAtividadesActivity.class);
                 startActivity(i);
 
-                // close this activity
+                // Close this activity
                 finish();
             }
         }, SPLASH_TIME_OUT);
     }
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

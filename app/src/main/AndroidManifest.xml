@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.projectles.povmt">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -28,11 +30,11 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".activitys.atividadesDetalhesActivity"
+            android:name=".activitys.AtividadesDetalhadasActivity"
             android:label="@string/title_activity_atividades_detalhes"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activitys.ListAtividadesActivity"
+            android:name=".activitys.ListarAtividadesActivity"
             android:label="POvMT"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>

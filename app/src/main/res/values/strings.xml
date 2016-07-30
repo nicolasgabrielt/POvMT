@@ -5,6 +5,8 @@
     <string name="title_activity_atividades_detalhes">atividadesDetalhesActivity</string>
     <string name="title_activity_menu_acitivity">menuAcitivity</string>
 
+    <string name="activities_requests">restActivities</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="url_atividades">http://marcosarruda.me/povmt/activities</string>
 </resources>

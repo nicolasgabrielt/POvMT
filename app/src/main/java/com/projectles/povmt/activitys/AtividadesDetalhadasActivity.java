@@ -23,7 +23,7 @@ import com.projectles.povmt.models.Util;
 import java.io.Serializable;
 import java.util.Date;
 
-public class atividadesDetalhesActivity extends AppCompatActivity {
+public class AtividadesDetalhadasActivity extends AppCompatActivity {
     private Atividade atividade;
     private AtividadeDAO dao;
     private TempoInvestidoDAO daoTempo;
