@@ -7,6 +7,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.LayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -20,7 +21,10 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.Response;
 import com.android.volley.Response.Listener;
+import com.android.volley.Response.ErrorListener;
+import com.android.volley.VolleyError;
 import com.projectles.povmt.R;
 import com.projectles.povmt.adapters.AtividadesAdapter;
 import com.projectles.povmt.api.shared.RequestManager;
@@ -70,15 +74,6 @@ public class ListarAtividadesActivity extends AppCompatActivity
         LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.btn_add);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                createDialogNewAtividade();
-                adapter.notifyDataSetChanged();
-            }
-        });
-
         // Get the activities list from server
         client.atividades.getAtividades(new Listener<Atividade[]>() {
             @Override
@@ -89,6 +84,26 @@ public class ListarAtividadesActivity extends AppCompatActivity
                 Collections.sort(atividades, Collections.<Atividade>reverseOrder());
                 adapter = new AtividadesAdapter(atividades, client.getContext());
                 recyclerView.setAdapter(adapter);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("RestError", "FAIL:, cause by: " + error.getMessage());
+                Toast.makeText(getApplicationContext(),
+                        "Error: " + error.getMessage(), Toast.LENGTH_LONG).show();
+
+                atividades = new ArrayList<>();
+                adapter = new AtividadesAdapter(atividades, client.getContext());
+                recyclerView.setAdapter(adapter);
+            }
+        });
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.btn_add);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                createDialogNewAtividade();
+                adapter.notifyDataSetChanged();
             }
         });
     }
@@ -103,6 +118,7 @@ public class ListarAtividadesActivity extends AppCompatActivity
         // Pass null as the parent view because its going in the dialog layout
         final View dialogView = inflater.inflate(R.layout.adicionar_atividade_dialog, null);
         builder.setView(dialogView);
+
         final EditText edtNome = (EditText) dialogView.findViewById(R.id.edtxt_nome);
         final EditText edtDescricao = (EditText) dialogView.findViewById(R.id.edtxt_descricao);
 
@@ -114,7 +130,9 @@ public class ListarAtividadesActivity extends AppCompatActivity
                 String descricao = edtDescricao.getText().toString();
 
                 if(nome.trim().isEmpty() || descricao.trim().isEmpty()){
-                    Toast.makeText(getApplicationContext(),     "Algum dos campos esta vazio!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(
+                            getApplicationContext(),
+                            "Algum dos campos esta vazio!", Toast.LENGTH_LONG).show();
                 } else {
                     Map<String, String> params = new HashMap<>();
                     // TODO: Fix this when the user module is created
@@ -122,12 +140,10 @@ public class ListarAtividadesActivity extends AppCompatActivity
                     params.put("name", nome);
                     params.put("description", descricao);
 
-                    client.atividades.addAtividade(new Listener<Atividade[]>() {
+                    client.atividades.addAtividade(new Listener<Atividade>() {
                         @Override
-                        public void onResponse(Atividade[] response) {
-                            atividades = new ArrayList<>();
-                            atividades.addAll(Arrays.asList(response));
-
+                        public void onResponse(Atividade response) {
+                            atividades.add(response);
                             Collections.sort(atividades, Collections.<Atividade>reverseOrder());
                             adapter.swap(atividades);
                         }
@@ -143,7 +159,6 @@ public class ListarAtividadesActivity extends AppCompatActivity
         dialog.show();
     }
 
-
     @Override
     protected void onRestart() {
         client.atividades.getAtividades(new Listener<Atividade[]>() {
@@ -153,12 +168,16 @@ public class ListarAtividadesActivity extends AppCompatActivity
                 atividades.addAll(Arrays.asList(response));
 
                 Collections.sort(atividades, Collections.<Atividade>reverseOrder());
-                adapter.swap(atividades);
+                if (adapter == null) {
+                    adapter = new AtividadesAdapter(atividades, client.getContext());
+                    adapter.notifyDataSetChanged();
+                } else {
+                    adapter.swap(atividades);
+                }
             }
         });
         super.onRestart();
     }
-
 
     @Override
     public void onBackPressed() {

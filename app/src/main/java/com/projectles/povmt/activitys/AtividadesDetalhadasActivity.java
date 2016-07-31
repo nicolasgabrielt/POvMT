@@ -13,25 +13,27 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.projectles.povmt.DAO.AtividadeDAO;
-import com.projectles.povmt.DAO.TempoInvestidoDAO;
+import com.android.volley.Response;
+import com.android.volley.Response.Listener;
 import com.projectles.povmt.R;
+import com.projectles.povmt.api.RestClient;
 import com.projectles.povmt.models.Atividade;
 import com.projectles.povmt.models.TempoInvestido;
 import com.projectles.povmt.models.Util;
 
-import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 public class AtividadesDetalhadasActivity extends AppCompatActivity {
-    private Atividade atividade;
-    private AtividadeDAO dao;
-    private TempoInvestidoDAO daoTempo;
-    private TextView descricaoAtividade;
-    private TextView nomeAtividade;
-    private TextView dataUpdate;
+    private TextView nome;
+    private TextView descricao;
     private TextView dataCriacao;
-    private TextView tempoEstimado;
+    private TextView tempoInvestido;
+    private TextView dataAtualizacao;
+
+    private RestClient client;
+    private Atividade atividade;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,11 +45,11 @@ public class AtividadesDetalhadasActivity extends AppCompatActivity {
         Intent i = getIntent();
         atividade = (Atividade) i.getSerializableExtra("ATIVIDADE");
 
-        nomeAtividade = (TextView) findViewById(R.id.txt_atividade_nome);
-        descricaoAtividade = (TextView) findViewById(R.id.txt_descricao_atividade);
-        dataUpdate = (TextView) findViewById(R.id.txt_data_update);
+        nome = (TextView) findViewById(R.id.txt_atividade_nome);
+        descricao = (TextView) findViewById(R.id.txt_descricao_atividade);
+        dataAtualizacao = (TextView) findViewById(R.id.txt_data_update);
         dataCriacao = (TextView) findViewById(R.id.txt_data_criacao);
-        tempoEstimado = (TextView) findViewById(R.id.txt_qnt_horas);
+        tempoInvestido = (TextView) findViewById(R.id.txt_qnt_horas);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.add_ti);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -56,32 +58,26 @@ public class AtividadesDetalhadasActivity extends AppCompatActivity {
                createDialogNewTi();
             }
         });
-
-
-
-
     }
-
 
     @Override
     protected void onStart() {
         super.onStart();
-        // specify an adapter (see also next example)
-        dao = new AtividadeDAO(getApplicationContext());
-        daoTempo = new TempoInvestidoDAO(getApplicationContext());
-        nomeAtividade.setText(atividade.getNome());
-        descricaoAtividade.setText(atividade.getDescricao());
-        tempoEstimado.setText(String.valueOf(atividade.getTempoTotalInvestido(getApplicationContext())));
-        dataUpdate.setText(Util.getStringofDateHoraDiaAno(atividade.getUltimaAtualizacao()));
-        dataCriacao.setText(Util.getStringofDateHoraDiaAno(atividade.getDataCriacao()));
 
+        // Specify an adapter (see also next example)
+        nome.setText(atividade.getNome());
+        descricao.setText(atividade.getDescricao());
+        tempoInvestido.setText(String.valueOf(atividade.getTisum()));
+        dataAtualizacao.setText(Util.getStringOfDateHoraDiaAno(atividade.getAtualizacao()));
+        dataCriacao.setText(Util.getStringOfDateHoraDiaAno(atividade.getCriacao()));
+
+        // Init Rest Client
+        client = new RestClient(getApplicationContext());
     }
-
-
-
 
     public void createDialogNewTi() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
         // Get the layout inflater
         LayoutInflater inflater = this.getLayoutInflater();
 
@@ -95,18 +91,30 @@ public class AtividadesDetalhadasActivity extends AppCompatActivity {
         builder.setPositiveButton("Adicionar", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
-                if (!(edtTi.getText().equals(null)) && !(edtTi.getText().toString().trim().equals("")) ){
-                    float ti = (float) Double.parseDouble(edtTi.getText().toString());
-                    TempoInvestido tempo = new TempoInvestido(ti,atividade.getId());
-                    atividade.addTempoInvestido(getApplicationContext(),tempo);
-                    atividade.setUltimaAtualizacao(new Date());
-                    dao.atualiza(atividade);
-                    tempoEstimado.setText(String.valueOf(atividade.getTempoTotalInvestido(getApplicationContext())));
-                    dataUpdate.setText(Util.getStringofDateHoraDiaAno(atividade.getUltimaAtualizacao()));
-                }else{
-                    Toast.makeText(getApplicationContext(),"Preencha os campos corretamente!", Toast.LENGTH_LONG).show();
-                }
+                if (!edtTi.getText().toString().trim().isEmpty()) {
+                    try {
+                        Double.parseDouble(edtTi.getText().toString());
+                        Map<String, String> params = new HashMap<>();
+                        params.put("activityFk", atividade.getId().toString());
+                        params.put("duration", edtTi.getText().toString());
 
+                        client.tempoInvestido.addTempoInvestido(new Response.Listener<TempoInvestido>() {
+                            @Override
+                            public void onResponse(TempoInvestido response) {
+                                atividade.addTempoInvestido(response);
+                                atividade.setAtualizacao(new Date());
+                                tempoInvestido.setText(String.valueOf(atividade.getTisum()));
+                                dataAtualizacao.setText(Util.getStringOfDateHoraDiaAno(atividade.getAtualizacao()));
+                            }
+                        }, params);
+                    } catch (NumberFormatException ex) {
+                        Toast.makeText(getApplicationContext(),
+                                "Preencha os campos corretamente!", Toast.LENGTH_LONG).show();
+                    }
+                }else{
+                    Toast.makeText(getApplicationContext(),
+                            "Preencha os campos corretamente!", Toast.LENGTH_LONG).show();
+                }
             }
         })
                 .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -116,6 +124,4 @@ public class AtividadesDetalhadasActivity extends AppCompatActivity {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
-
-
 }

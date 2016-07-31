@@ -24,10 +24,36 @@ public class AtividadeRest {
     }
 
     public void getAtividades(Listener<Atividade[]> successResponse) {
+        this.getAtividades(successResponse, new ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(context,
+                        "Error: " + error.getMessage(), Toast.LENGTH_LONG).show();
+
+            }
+        });
+    }
+
+    public void getAtividades(Listener<Atividade[]> successResponse, ErrorListener errorResponse) {
         ObjectRequest<Atividade[]> objRequest = new ObjectRequest<>(
                 context.getString(R.string.url_atividades),
                 Atividade[].class,
                 null,
+                successResponse,
+                errorResponse
+        );
+        objRequest.setTag(
+                context.getString(R.string.activities_requests)
+        );
+        RequestManager.getInstance(context).addToRequestQueue(objRequest);
+    }
+
+    public void addAtividade(Listener<Atividade> successResponse, Map<String, String> params) {
+        ObjectRequest<Atividade> objRequest = new ObjectRequest<Atividade>(
+                Method.POST,
+                context.getString(R.string.url_atividades),
+                Atividade.class,
+                params,
                 successResponse,
                 new ErrorListener() {
                     @Override
@@ -42,33 +68,5 @@ public class AtividadeRest {
                 context.getString(R.string.activities_requests)
         );
         RequestManager.getInstance(context).addToRequestQueue(objRequest);
-    }
-
-    public void addAtividade(Listener<Atividade[]> successResponse, Map<String, String> params) {
-        ObjectRequest<Atividade> objRequest = new ObjectRequest<Atividade>(
-                Method.POST,
-                context.getString(R.string.url_atividades),
-                Atividade.class,
-                params,
-                new Listener<Atividade>() {
-                    @Override
-                    public void onResponse(Atividade response) {
-                        Log.i("Rest", "SUCCESS: " + response);
-                    }
-                },
-                new ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(context,
-                                "Error: " + error.getMessage(), Toast.LENGTH_LONG).show();
-
-                    }
-                }
-        );
-        objRequest.setTag(
-                context.getString(R.string.activities_requests)
-        );
-        RequestManager.getInstance(context).addToRequestQueue(objRequest);
-        getAtividades(successResponse);
     }
 }
