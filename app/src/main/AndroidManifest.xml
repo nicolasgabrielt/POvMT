@@ -36,6 +36,14 @@
         <activity
             android:name=".activitys.ListarAtividadesActivity"
             android:label="POvMT"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activitys.Relatorio"
+            android:label="Relatorio"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity
+            android:name=".activitys.RelatorioSemanalActivity"
+            android:label="@string/title_activity_relatorio_semanal"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

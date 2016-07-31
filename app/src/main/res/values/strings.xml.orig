@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Povmt</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_list_atividades">ListAtividades</string>
+    <string name="title_activity_atividades_detalhes">atividadesDetalhesActivity</string>
+    <string name="title_activity_menu_acitivity">menuAcitivity</string>
+
+    <string name="activities_requests">restActivities</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+<<<<<<< HEAD
+    <string name="base_url_ti">http://marcosarruda.me/povmt/investedtime/</string>
+    <string name="base_url_atividades">http://marcosarruda.me/povmt/activities/</string>
+    <string name="url_atividades">http://marcosarruda.me/povmt/activities/</string>
+=======
+    <string name="title_activity_relatorio_semanal">RelatorioSemanal</string>
+    <string name="title_activity_relatorio">Relatorio</string>
+>>>>>>> master
+</resources>
