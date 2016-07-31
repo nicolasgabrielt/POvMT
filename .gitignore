@@ -48,5 +48,7 @@ captures/
 
 # Windows thumbnail db
 Thumbs.db
-
 *.pro
+
+# Meld File
+*.orig

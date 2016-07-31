@@ -12,39 +12,31 @@ import com.projectles.povmt.R;
 import com.projectles.povmt.models.Atividade;
 import com.projectles.povmt.models.Util;
 
-import java.util.Collections;
 import java.util.List;
 
-/**
- * Created by Nicolas on 17/07/2016.
- */
 public class RelatorioSemanalAdapter extends RecyclerView.Adapter<RelatorioSemanalAdapter.ViewHolder> {
 
-
-    private List<Atividade> mDataset;
     private Context context;
     private Activity activity;
-
+    private List<Atividade> atividades;
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public RelatorioSemanalAdapter(List<Atividade> myDataset , Activity context) {
-        mDataset = myDataset;
+    public RelatorioSemanalAdapter(List<Atividade> atividades , Context context) {
+        this.atividades = atividades;
+
         this.context = context;
-        this.activity = context;
+        this.activity = (Activity) context;
     }
 
-
-    public void swap(List<Atividade> datas){
-        mDataset.clear();
-        Collections.sort(datas);
-        Collections.reverse(datas);
-        mDataset.addAll(datas);
+    public void swap(List<Atividade> novasAtividades){
+        atividades.clear();
+        atividades.addAll(novasAtividades);
         notifyDataSetChanged();
     }
 
     // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder
+    // Complex data items may need more than one view per item,
+    // and you provide access to all the views for a data item in a view holder
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView nomeAtividadeTxt;
         public TextView qntHorasTxt;
@@ -58,38 +50,29 @@ public class RelatorioSemanalAdapter extends RecyclerView.Adapter<RelatorioSeman
         }
     }
 
-
-
     // Create new views (invoked by the layout manager)
     @Override
-    public RelatorioSemanalAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                                 int viewType) {
-        // create a new view
+    public RelatorioSemanalAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        // Create a new view
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_atividade, parent, false);
-        // set the view's size, margins, paddings and layout parameters
-        ViewHolder vh = new ViewHolder(v);
-        return vh;
+        // Set the view's size, margins, padding and layout parameters
+        return new ViewHolder(v);
     }
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        // - get element from your dataset at this position
-        // - replace the contents of the view with that element
-        final Atividade atividade =  mDataset.get(position);
-
-        holder.nomeAtividadeTxt.setText(atividade.getNome());
-        holder.qntHorasTxt.setText( String.valueOf(atividade.getTempoTotalInvestidoSemanal(context)));
-        holder.ultimaAtualizacao.setText(Util.getStringofDateDiaAno(atividade.getUltimaAtualizacao()));
-
-
+    public void onBindViewHolder(ViewHolder holder, int i) {
+        // - Get element from your dataset at this position
+        // - Replace the contents of the view with that element
+        holder.nomeAtividadeTxt.setText(atividades.get(i).getNome());
+        holder.qntHorasTxt.setText( String.valueOf(atividades.get(i).getTisum()));
+        holder.ultimaAtualizacao.setText(Util.getStringOfDateDiaAno(atividades.get(i).getAtualizacao()));
     }
-
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return mDataset.size();
+        return atividades.size();
     }
 }

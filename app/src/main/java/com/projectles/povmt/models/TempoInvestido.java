@@ -27,12 +27,8 @@ public class TempoInvestido implements Serializable {
         this.id = id;
     }
 
-    public Long getId_atividade() {
+    public Long getAtividade() {
         return atividade;
-    }
-
-    public void setId_atividade(Long atividade) {
-        this.atividade = atividade;
     }
 
     public double getTi() {

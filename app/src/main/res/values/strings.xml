@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">Povmt</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_relatorio">Relatorio</string>
     <string name="title_activity_list_atividades">ListAtividades</string>
     <string name="title_activity_atividades_detalhes">atividadesDetalhesActivity</string>
+    <string name="title_activity_relatorio_semanal">RelatorioSemanal</string>
     <string name="title_activity_menu_acitivity">menuAcitivity</string>
 
     <string name="activities_requests">restActivities</string>

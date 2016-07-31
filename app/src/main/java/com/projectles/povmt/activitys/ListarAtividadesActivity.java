@@ -22,7 +22,6 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.android.volley.Response;
 import com.android.volley.Response.Listener;
 import com.android.volley.Response.ErrorListener;
 import com.android.volley.VolleyError;
@@ -45,13 +44,14 @@ public class ListarAtividadesActivity extends AppCompatActivity
     private RecyclerView recyclerView;
     private AtividadesAdapter adapter;
 
-    private RestClient client = new RestClient(this);
+    private RestClient client;
     private List<Atividade> atividades;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        client = new RestClient(this);
         setContentView(R.layout.activity_listatividades_activity);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -86,7 +86,7 @@ public class ListarAtividadesActivity extends AppCompatActivity
                 adapter = new AtividadesAdapter(atividades, client.getContext());
                 recyclerView.setAdapter(adapter);
             }
-        }, new Response.ErrorListener() {
+        }, new ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.e("RestError", "FAIL:, cause by: " + error.getMessage());
