@@ -29,16 +29,14 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 // This method will be executed once the timer is over
                 // Start your app main activity
-                Intent i = new Intent(MainActivity.this, ListAtividadesActivity.class);
+                Intent i = new Intent(MainActivity.this, ListarAtividadesActivity.class);
                 startActivity(i);
 
-                // close this activity
+                // Close this activity
                 finish();
             }
         }, SPLASH_TIME_OUT);
     }
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -51,15 +49,13 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+        // as you specify a parent activity in AndroidManifest.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
+        // Noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
-
 }

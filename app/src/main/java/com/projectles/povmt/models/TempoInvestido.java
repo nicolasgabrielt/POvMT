@@ -1,24 +1,19 @@
 package com.projectles.povmt.models;
 
-import android.util.Log;
-
 import java.io.Serializable;
 import java.util.Date;
 
-/**
- * Created by Nicolas on 26/07/2016.
- */
 public class TempoInvestido implements Serializable {
     private static final long serialVersionUID = 1L;
     private Long id;
-    private Long id_atividade;
-    private Date data;
-    private float ti;
+    private Long atividade;
+    private Date criacao;
+    private double ti;
 
-    public TempoInvestido(float ti, Long id_atividade){
+    public TempoInvestido(double ti, Long atividade){
         this.ti = ti;
-        this.id_atividade = id_atividade;
-        data = new Date();
+        this.atividade = atividade;
+        criacao = new Date();
     }
 
     public TempoInvestido(){
@@ -33,14 +28,14 @@ public class TempoInvestido implements Serializable {
     }
 
     public Long getId_atividade() {
-        return id_atividade;
+        return atividade;
     }
 
-    public void setId_atividade(Long id_atividade) {
-        this.id_atividade = id_atividade;
+    public void setId_atividade(Long atividade) {
+        this.atividade = atividade;
     }
 
-    public float getTi() {
+    public double getTi() {
         return ti;
     }
 
@@ -48,11 +43,11 @@ public class TempoInvestido implements Serializable {
         this.ti = ti;
     }
 
-    public Date getData() {
-        return data;
+    public Date getCriacao() {
+        return criacao;
     }
 
-    public void setData(Date data) {
-        this.data = data;
+    public void setCriacao(Date criacao) {
+        this.criacao = criacao;
     }
 }

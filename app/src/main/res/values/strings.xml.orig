@@ -8,7 +8,12 @@
     <string name="activities_requests">restActivities</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+<<<<<<< HEAD
+    <string name="title_activity_relatorio_semanal">RelatorioSemanal</string>
+    <string name="title_activity_relatorio">Relatorio</string>
+=======
     <string name="base_url_ti">http://marcosarruda.me/povmt/investedtime/</string>
     <string name="base_url_atividades">http://marcosarruda.me/povmt/activities/</string>
     <string name="url_atividades">http://marcosarruda.me/povmt/activities/</string>
+>>>>>>> diego
 </resources>
