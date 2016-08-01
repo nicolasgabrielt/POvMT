@@ -50,7 +50,11 @@ public class RelatorioActivity extends AppCompatActivity {
             @Override
             public void onResponse(Atividade[] response) {
                 atividades.addAll(Arrays.asList(response));
-
+                geraBarras(atividades);
+                currWeek = (BarChartView) findViewById(R.id.graph_curr_wk);
+                lastWeek = (BarChartView) findViewById(R.id.graph_last_wk);
+                lateWeek = (BarChartView) findViewById(R.id.graph_two_wks);
+                setGraph();
             }
         }, new ErrorListener() {
             @Override
@@ -58,12 +62,6 @@ public class RelatorioActivity extends AppCompatActivity {
 
             }
         });
-
-        geraBarras(atividades);
-        currWeek = (BarChartView) findViewById(R.id.graph_curr_wk);
-        lastWeek = (BarChartView) findViewById(R.id.graph_last_wk);
-        lateWeek = (BarChartView) findViewById(R.id.graph_two_wks);
-        setGraph();
     }
 
     private void setGraph(){
