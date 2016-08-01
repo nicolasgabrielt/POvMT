@@ -6,13 +6,18 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView.LayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.widget.Toast;
 
-import com.android.volley.Response;
+import com.android.volley.Response.Listener;
+import com.android.volley.Response.ErrorListener;
 import com.android.volley.VolleyError;
 import com.projectles.povmt.R;
 import com.projectles.povmt.adapters.AtividadesAdapter;
 import com.projectles.povmt.api.RestClient;
+import com.projectles.povmt.api.shared.RequestManager;
 import com.projectles.povmt.models.Atividade;
+import com.projectles.povmt.models.Util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,11 +30,13 @@ public class RelatorioSemanalActivity extends AppCompatActivity {
     private AtividadesAdapter adapter;
 
     private RestClient client;
-    private List<Atividade> atividades;
+    private List<Atividade> atividades = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        client = new RestClient(this);
         setContentView(R.layout.activity_relatorio_semanal);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -44,23 +51,40 @@ public class RelatorioSemanalActivity extends AppCompatActivity {
         LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        client = new RestClient(this);
-        client.atividades.getAtividades(new Response.Listener<Atividade[]>() {
-            @Override
-            public void onResponse(Atividade[] response) {
-                atividades = new ArrayList<>();
-                atividades.addAll(Arrays.asList(response));
+        // Adding adapter to recyclerView
+        adapter = new AtividadesAdapter(atividades, this);
+        recyclerView.setAdapter(adapter);
 
-                Collections.sort(atividades, Collections.<Atividade>reverseOrder());
-                adapter = new AtividadesAdapter(atividades, client.getContext());
-                recyclerView.setAdapter(adapter);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                adapter = new AtividadesAdapter(new ArrayList<Atividade>(), client.getContext());
-                recyclerView.setAdapter(adapter);
-            }
-        });
+        if (Util.isConnectedToInternet(this)) {
+            client.atividades.getAtividades(new Listener<Atividade[]>() {
+                @Override
+                public void onResponse(Atividade[] response) {
+                    atividades.addAll(Arrays.asList(response));
+                    Collections.sort(atividades, Collections.<Atividade>reverseOrder());
+
+                    adapter = new AtividadesAdapter(atividades, client.getContext());
+                    recyclerView.setAdapter(adapter);
+                }
+            }, new ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e("RestError", "Fail cause by: " + error.getCause());
+                }
+            });
+        } else {
+            Toast.makeText(
+                    getApplicationContext(),
+                    "Sem conexão com a internet, impossível completar a operação",
+                    Toast.LENGTH_LONG
+            ).show();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        RequestManager.getInstance(this).stopRequestsInRequestQueueByTag(
+                getString(R.string.activities_requests)
+        );
     }
 }

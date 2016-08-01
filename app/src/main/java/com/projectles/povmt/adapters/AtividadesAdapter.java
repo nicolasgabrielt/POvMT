@@ -23,12 +23,12 @@ import com.projectles.povmt.models.Util;
 import com.projectles.povmt.models.Atividade;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class AtividadesAdapter extends Adapter<AtividadesAdapter.ViewHolder> {
 
     private Context context;
-    private RestClient client;
     private Activity activity;
 
     private List<Atividade> atividades;
@@ -38,12 +38,12 @@ public class AtividadesAdapter extends Adapter<AtividadesAdapter.ViewHolder> {
         this.context = context;
         this.atividades = atividades;
         this.activity = (Activity) context;
-        this.client = new RestClient(context);
     }
 
     public void swap(List<Atividade> novasAtividades){
         atividades.clear();
         atividades.addAll(novasAtividades);
+        Collections.sort(atividades, Collections.<Atividade>reverseOrder());
         notifyDataSetChanged();
     }
 
@@ -76,36 +76,21 @@ public class AtividadesAdapter extends Adapter<AtividadesAdapter.ViewHolder> {
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(ViewHolder holder, final int i) {
+    public void onBindViewHolder(ViewHolder holder, int position) {
         // - Get element from your dataset at this position
         // - Replace the contents of the view with that element
+        final Atividade atividade = atividades.get(position);
 
-        holder.nomeAtividadeTxt.setText(atividades.get(i).getNome());
-        holder.qntHorasTxt.setText(String.valueOf(atividades.get(i).getTisum()));
-        holder.ultimaAtualizacao.setText(Util.getStringOfDateDiaAno(atividades.get(i).getAtualizacao()));
+        holder.nomeAtividadeTxt.setText(atividade.getNome());
+        holder.qntHorasTxt.setText(String.valueOf(atividade.getTisum()));
+        holder.ultimaAtualizacao.setText(Util.getStringOfDateDiaAno(atividade.getAtualizacao()));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final Intent intent = new Intent(context, AtividadesDetalhadasActivity.class);
-                client.tempoInvestido.getTemposInvestidos(
-                        String.valueOf(atividades.get(i).getId()),
-                        new Listener<TempoInvestido[]>() {
-                            @Override
-                            public void onResponse(TempoInvestido[] response) {
-                                atividades.get(i).setTis(Arrays.asList(response));
-                                intent.putExtra("ATIVIDADE", atividades.get(i));
-                                activity.startActivityForResult(intent, 1);
-                            }
-                        },
-                        new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                Log.e("RestError", "FAIL:, cause by: " + error.getCause());
 
-                                intent.putExtra("ATIVIDADE", atividades.get(i));
-                                activity.startActivityForResult(intent, 1);
-                            }
-                        });
+                intent.putExtra("ATIVIDADE", atividade);
+                activity.startActivityForResult(intent, 1);
             }
         });
     }

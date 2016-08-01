@@ -1,10 +1,12 @@
 package com.projectles.povmt.activitys;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AlertDialog.Builder;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.LayoutManager;
@@ -30,6 +32,7 @@ import com.projectles.povmt.adapters.AtividadesAdapter;
 import com.projectles.povmt.api.shared.RequestManager;
 import com.projectles.povmt.api.RestClient;
 import com.projectles.povmt.models.Atividade;
+import com.projectles.povmt.models.Util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,7 +48,7 @@ public class ListarAtividadesActivity extends AppCompatActivity
     private AtividadesAdapter adapter;
 
     private RestClient client;
-    private List<Atividade> atividades;
+    private List<Atividade> atividades = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +56,7 @@ public class ListarAtividadesActivity extends AppCompatActivity
 
         client = new RestClient(this);
         setContentView(R.layout.activity_listatividades_activity);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -75,42 +79,46 @@ public class ListarAtividadesActivity extends AppCompatActivity
         LayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        // Get the activities list from server
-        client.atividades.getAtividades(new Listener<Atividade[]>() {
-            @Override
-            public void onResponse(Atividade[] response) {
-                atividades = new ArrayList<>();
-                atividades.addAll(Arrays.asList(response));
+        // Adding adapter to recyclerView
+        adapter = new AtividadesAdapter(atividades, this);
+        recyclerView.setAdapter(adapter);
 
-                Collections.sort(atividades, Collections.<Atividade>reverseOrder());
-                adapter = new AtividadesAdapter(atividades, client.getContext());
-                recyclerView.setAdapter(adapter);
-            }
-        }, new ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("RestError", "FAIL:, cause by: " + error.getMessage());
-                Toast.makeText(getApplicationContext(),
-                        "Error: " + error.getMessage(), Toast.LENGTH_LONG).show();
+        if (Util.isConnectedToInternet(this)) {
+            // Get the activities list from server
+            client.atividades.getAtividades(new Listener<Atividade[]>() {
+                @Override
+                public void onResponse(Atividade[] response) {
+                    atividades.addAll(Arrays.asList(response));
+                    Collections.sort(atividades, Collections.<Atividade>reverseOrder());
 
-                atividades = new ArrayList<>();
-                adapter = new AtividadesAdapter(atividades, client.getContext());
-                recyclerView.setAdapter(adapter);
-            }
-        });
-
+                    // Adding adapter to recyclerView
+                    adapter = new AtividadesAdapter(atividades, client.getContext());
+                    recyclerView.setAdapter(adapter);
+                }
+            }, new ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e("RestError", "Fail cause by: " + error.getCause());
+                }
+            });
+        } else {
+            Toast.makeText(
+                    getApplicationContext(),
+                    "Sem conexão com a internet, impossível completar a operação",
+                    Toast.LENGTH_LONG
+            ).show();
+        }
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.btn_add);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 createDialogNewAtividade();
-                adapter.notifyDataSetChanged();
             }
         });
     }
 
     public void createDialogNewAtividade() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        Builder builder = new AlertDialog.Builder(this);
 
         // Get the layout inflater
         LayoutInflater inflater = this.getLayoutInflater();
@@ -130,10 +138,16 @@ public class ListarAtividadesActivity extends AppCompatActivity
                 String nome = edtNome.getText().toString();
                 String descricao = edtDescricao.getText().toString();
 
-                if(nome.trim().isEmpty() || descricao.trim().isEmpty()){
+                if(nome.trim().isEmpty() || descricao.trim().isEmpty()) {
                     Toast.makeText(
                             getApplicationContext(),
                             "Algum dos campos esta vazio!", Toast.LENGTH_LONG).show();
+                }else if (!Util.isConnectedToInternet(getApplicationContext())) {
+                    Toast.makeText(
+                            getApplicationContext(),
+                            "Sem conexão com a internet, impossível completar a operação",
+                            Toast.LENGTH_LONG
+                    ).show();
                 } else {
                     Map<String, String> params = new HashMap<>();
                     // TODO: Fix this when the user module is created
@@ -146,7 +160,10 @@ public class ListarAtividadesActivity extends AppCompatActivity
                         public void onResponse(Atividade response) {
                             atividades.add(response);
                             Collections.sort(atividades, Collections.<Atividade>reverseOrder());
-                            adapter.swap(atividades);
+
+                            // Adding adapter to recyclerView
+                            adapter = new AtividadesAdapter(atividades, client.getContext());
+                            recyclerView.setAdapter(adapter);
                         }
                     }, params);
                 }
@@ -162,22 +179,37 @@ public class ListarAtividadesActivity extends AppCompatActivity
 
     @Override
     protected void onRestart() {
-        client.atividades.getAtividades(new Listener<Atividade[]>() {
-            @Override
-            public void onResponse(Atividade[] response) {
-                atividades = new ArrayList<>();
-                atividades.addAll(Arrays.asList(response));
-
-                Collections.sort(atividades, Collections.<Atividade>reverseOrder());
-                if (adapter == null) {
-                    adapter = new AtividadesAdapter(atividades, client.getContext());
-                    adapter.notifyDataSetChanged();
-                } else {
-                    adapter.swap(atividades);
-                }
-            }
-        });
         super.onRestart();
+
+        if (Util.isConnectedToInternet(this)) {
+            client.atividades.getAtividades(new Listener<Atividade[]>() {
+                @Override
+                public void onResponse(Atividade[] response) {
+                    atividades.clear();
+                    atividades.addAll(Arrays.asList(response));
+                    Collections.sort(atividades, Collections.<Atividade>reverseOrder());
+
+                    // Adding adapter to recyclerView
+                    adapter = new AtividadesAdapter(atividades, client.getContext());
+                    recyclerView.setAdapter(adapter);
+                }
+            }, new ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e("RestError", "FAIL:, cause by: " + error.getMessage());
+
+                    // Adding adapter to recyclerView
+                    adapter = new AtividadesAdapter(atividades, client.getContext());
+                    recyclerView.setAdapter(adapter);
+                }
+            });
+        } else {
+            Toast.makeText(
+                    getApplicationContext(),
+                    "Sem conexão com a internet, impossível completar a operação",
+                    Toast.LENGTH_LONG
+            ).show();
+        }
     }
 
     @Override
@@ -215,11 +247,9 @@ public class ListarAtividadesActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_relatorio_semanal) {
-
             // Handle the camera action
             Intent intent = new Intent(this, RelatorioSemanalActivity.class);
             startActivity(intent);
-
         }
 
         else if (id == R.id.nav_relatorio_historico){

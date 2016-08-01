@@ -5,8 +5,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.widget.Toast;
 
-import com.android.volley.Response;
 import com.android.volley.Response.Listener;
 import com.android.volley.Response.ErrorListener;
 import com.android.volley.VolleyError;
@@ -16,8 +16,10 @@ import com.db.chart.view.BarChartView;
 import com.db.chart.view.ChartView;
 import com.projectles.povmt.R;
 import com.projectles.povmt.api.RestClient;
+import com.projectles.povmt.api.shared.RequestManager;
 import com.projectles.povmt.models.Atividade;
 import com.projectles.povmt.models.TempoInvestido;
+import com.projectles.povmt.models.Util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,38 +32,52 @@ public class RelatorioActivity extends AppCompatActivity {
     private static final int DIVISOES_Y = 4;
 
     private RestClient client;
-    private List<Atividade> atividades;
+    private List<Atividade> atividades = new ArrayList<>();
 
     private BarSet barSetCurr, barSetLast, barSetLate;
-    private BarChartView currWeek, lastWeek, lateWeek;
+    private BarChartView currWeek, lastWeek, passWeek;
     private int[] cores = new int[]{4620980, 11674146, 25600, 10506797, 12092939, 8421504, 12357519};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        client = new RestClient(this);
         setContentView(R.layout.activity_relatorio);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        atividades = new ArrayList<>();;
-        client = new RestClient(getApplicationContext());
+        barSetCurr = new BarSet();
+        barSetLast = new BarSet();
+        barSetLate = new BarSet();
 
-        client.atividades.getAtividades(new Listener<Atividade[]>() {
-            @Override
-            public void onResponse(Atividade[] response) {
-                atividades.addAll(Arrays.asList(response));
-                geraBarras(atividades);
-                currWeek = (BarChartView) findViewById(R.id.graph_curr_wk);
-                lastWeek = (BarChartView) findViewById(R.id.graph_last_wk);
-                lateWeek = (BarChartView) findViewById(R.id.graph_two_wks);
-                setGraph();
-            }
-        }, new ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
+        currWeek = (BarChartView) findViewById(R.id.graph_curr_wk);
+        lastWeek = (BarChartView) findViewById(R.id.graph_last_wk);
+        passWeek = (BarChartView) findViewById(R.id.graph_two_wks);
 
-            }
-        });
+        if (Util.isConnectedToInternet(this)) {
+            client.atividades.getAtividades(new Listener<Atividade[]>() {
+                @Override
+                public void onResponse(Atividade[] response) {
+                    atividades.addAll(Arrays.asList(response));
+                    geraBarras(atividades);
+                    setGraph();
+                }
+            }, new ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e("RestError", "FAIL:, cause by: " + error.getMessage());
+                    geraBarras(atividades);
+                    setGraph();
+                }
+            });
+        } else {
+            Toast.makeText(
+                    getApplicationContext(),
+                    "Sem conexão com a internet, impossível completar a operação",
+                    Toast.LENGTH_LONG
+            ).show();
+        }
     }
 
     private void setGraph(){
@@ -87,10 +103,10 @@ public class RelatorioActivity extends AppCompatActivity {
             lastWeek.show();
         }
         if (barSetLate.size() > 0) {
-            lateWeek.setAxisBorderValues(0, maxInterval, interval);
-            lateWeek.setGrid(ChartView.GridType.HORIZONTAL,DIVISOES_Y, 1, paint);
-            lateWeek.addData(barSetLate);
-            lateWeek.show();
+            passWeek.setAxisBorderValues(0, maxInterval, interval);
+            passWeek.setGrid(ChartView.GridType.HORIZONTAL,DIVISOES_Y, 1, paint);
+            passWeek.addData(barSetLate);
+            passWeek.show();
         }
     }
 
@@ -119,10 +135,6 @@ public class RelatorioActivity extends AppCompatActivity {
 
         Calendar semRetrasada = Calendar.getInstance();
         semRetrasada.add(Calendar.DATE, -21);
-
-        barSetCurr = new BarSet();
-        barSetLast = new BarSet();
-        barSetLate = new BarSet();
 
         for (int i=0; i < atividades.size(); i++){
             atividade = atividades.get(i);
@@ -155,5 +167,13 @@ public class RelatorioActivity extends AppCompatActivity {
                 barSetLate.addBar(b);
             }
         }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        RequestManager.getInstance(this).stopRequestsInRequestQueueByTag(
+                getString(R.string.activities_requests)
+        );
     }
 }

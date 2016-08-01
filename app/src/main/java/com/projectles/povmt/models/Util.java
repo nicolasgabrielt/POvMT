@@ -1,5 +1,9 @@
 package com.projectles.povmt.models;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -28,5 +32,13 @@ public class Util {
         SimpleDateFormat sdfDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date parsedDate = sdfDate.parse(date);
         return parsedDate;
+    }
+
+    public static boolean isConnectedToInternet(Context context) {
+        ConnectivityManager manager = (ConnectivityManager)
+               context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo netInfo = manager.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isAvailable() && netInfo.isConnected();
     }
 }
