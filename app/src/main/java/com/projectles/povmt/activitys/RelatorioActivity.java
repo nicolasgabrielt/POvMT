@@ -75,7 +75,7 @@ public class RelatorioActivity extends AppCompatActivity {
         maxInterval = interval * DIVISOES_Y;
 
         Paint paint = new Paint();
-        
+
         if (barSetCurr.size() > 0) {
             currWeek.setAxisBorderValues(0, maxInterval, interval);
             currWeek.setGrid(ChartView.GridType.HORIZONTAL,DIVISOES_Y, 1, paint);
@@ -125,14 +125,6 @@ public class RelatorioActivity extends AppCompatActivity {
         barSetCurr = new BarSet();
         barSetLast = new BarSet();
         barSetLate = new BarSet();
-
-
-        if(barSetCurr == null){
-            Log.d("Teste1: ","true");
-        }
-        else {
-            Log.d("Teste1: ", "false");
-        }
 
         for (int i=0; i < atividades.size(); i++){
             atividade = atividades.get(i);
