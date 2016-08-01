@@ -4,6 +4,7 @@ import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 
 import com.android.volley.Response;
 import com.android.volley.Response.Listener;
@@ -49,15 +50,16 @@ public class RelatorioActivity extends AppCompatActivity {
             @Override
             public void onResponse(Atividade[] response) {
                 atividades.addAll(Arrays.asList(response));
-                geraBarras(atividades);
+
             }
         }, new ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                geraBarras(atividades);
+
             }
         });
 
+        geraBarras(atividades);
         currWeek = (BarChartView) findViewById(R.id.graph_curr_wk);
         lastWeek = (BarChartView) findViewById(R.id.graph_last_wk);
         lateWeek = (BarChartView) findViewById(R.id.graph_two_wks);
@@ -72,24 +74,23 @@ public class RelatorioActivity extends AppCompatActivity {
         interval = (int) Math.ceil(max / DIVISOES_Y);
         maxInterval = interval * DIVISOES_Y;
 
-        currWeek.setAxisBorderValues(0, maxInterval, interval);
-        lastWeek.setAxisBorderValues(0, maxInterval, interval);
-        lateWeek.setAxisBorderValues(0, maxInterval, interval);
-
         Paint paint = new Paint();
-        currWeek.setGrid(ChartView.GridType.HORIZONTAL,DIVISOES_Y, 1, paint);
-        lastWeek.setGrid(ChartView.GridType.HORIZONTAL,DIVISOES_Y, 1, paint);
-        lateWeek.setGrid(ChartView.GridType.HORIZONTAL,DIVISOES_Y, 1, paint);
-
+        
         if (barSetCurr.size() > 0) {
+            currWeek.setAxisBorderValues(0, maxInterval, interval);
+            currWeek.setGrid(ChartView.GridType.HORIZONTAL,DIVISOES_Y, 1, paint);
             currWeek.addData(barSetCurr);
             currWeek.show();
         }
         if (barSetLast.size() > 0) {
+            lastWeek.setAxisBorderValues(0, maxInterval, interval);
+            lastWeek.setGrid(ChartView.GridType.HORIZONTAL,DIVISOES_Y, 1, paint);
             lastWeek.addData(barSetLast);
             lastWeek.show();
         }
         if (barSetLate.size() > 0) {
+            lateWeek.setAxisBorderValues(0, maxInterval, interval);
+            lateWeek.setGrid(ChartView.GridType.HORIZONTAL,DIVISOES_Y, 1, paint);
             lateWeek.addData(barSetLate);
             lateWeek.show();
         }
@@ -124,6 +125,14 @@ public class RelatorioActivity extends AppCompatActivity {
         barSetCurr = new BarSet();
         barSetLast = new BarSet();
         barSetLate = new BarSet();
+
+
+        if(barSetCurr == null){
+            Log.d("Teste1: ","true");
+        }
+        else {
+            Log.d("Teste1: ", "false");
+        }
 
         for (int i=0; i < atividades.size(); i++){
             atividade = atividades.get(i);

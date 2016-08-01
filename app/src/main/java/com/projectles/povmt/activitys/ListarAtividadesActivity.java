@@ -221,6 +221,11 @@ public class ListarAtividadesActivity extends AppCompatActivity
             startActivity(intent);
 
         }
+
+        else if (id == R.id.nav_relatorio_historico){
+            Intent intent = new Intent(this, RelatorioActivity.class);
+            startActivity(intent);
+        }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;

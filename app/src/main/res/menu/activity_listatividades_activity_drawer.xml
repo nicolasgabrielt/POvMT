@@ -5,11 +5,11 @@
         <item
             android:id="@+id/nav_relatorio_semanal"
             android:icon="@mipmap/ic_atividade_todo"
-            android:title="Relatorio Semanal" />
-        <!--<item-->
-            <!--android:id="@+id/nav_gallery"-->
-            <!--android:icon="@drawable/ic_menu_gallery"-->
-            <!--android:title="Gallery" />-->
+            android:title="Histórico da semana" />
+        <item
+            android:id="@+id/nav_relatorio_historico"
+            android:icon="@drawable/ic_menu_gallery"
+            android:title="Relatório"/>
         <!--<item-->
             <!--android:id="@+id/nav_slideshow"-->
             <!--android:icon="@drawable/ic_menu_slideshow"-->
