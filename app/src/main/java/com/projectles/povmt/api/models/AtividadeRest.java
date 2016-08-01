@@ -27,9 +27,7 @@ public class AtividadeRest {
         this.getAtividades(successResponse, new ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(context,
-                        "Error: " + error.getMessage(), Toast.LENGTH_LONG).show();
-
+                Log.e("RestError", "FAIL:, cause by: " + error.getMessage());
             }
         });
     }
@@ -51,16 +49,14 @@ public class AtividadeRest {
     public void addAtividade(Listener<Atividade> successResponse, Map<String, String> params) {
         ObjectRequest<Atividade> objRequest = new ObjectRequest<Atividade>(
                 Method.POST,
-                context.getString(R.string.url_atividades),
+                context.getString(R.string.base_url_atividades),
                 Atividade.class,
                 params,
                 successResponse,
                 new ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(context,
-                                "Error: " + error.getMessage(), Toast.LENGTH_LONG).show();
-
+                        Log.e("RestError", "FAIL:, cause by: " + error.getMessage());
                     }
                 }
         );

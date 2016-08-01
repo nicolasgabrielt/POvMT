@@ -37,7 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Semana passada"
+        android:text="Semana Passada"
         android:id="@+id/txt_semana_passada"
         android:layout_below="@+id/graph_curr_wk"
         android:layout_alignParentLeft="true"
@@ -59,7 +59,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Duas semanas atrás"
+        android:text="Semana Retrasada"
         android:id="@+id/txt_2_weeks_ago"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />

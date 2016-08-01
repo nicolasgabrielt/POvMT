@@ -12,25 +12,22 @@ import com.projectles.povmt.R;
 import com.projectles.povmt.models.Atividade;
 import com.projectles.povmt.models.Util;
 
+import java.util.Collections;
 import java.util.List;
 
 public class RelatorioSemanalAdapter extends RecyclerView.Adapter<RelatorioSemanalAdapter.ViewHolder> {
 
-    private Context context;
-    private Activity activity;
     private List<Atividade> atividades;
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public RelatorioSemanalAdapter(List<Atividade> atividades , Context context) {
+    public RelatorioSemanalAdapter(List<Atividade> atividades) {
         this.atividades = atividades;
-
-        this.context = context;
-        this.activity = (Activity) context;
     }
 
     public void swap(List<Atividade> novasAtividades){
         atividades.clear();
         atividades.addAll(novasAtividades);
+        Collections.sort(atividades, Collections.<Atividade>reverseOrder());
         notifyDataSetChanged();
     }
 

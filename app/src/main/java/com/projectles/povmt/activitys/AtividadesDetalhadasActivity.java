@@ -13,10 +13,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Response;
 import com.android.volley.Response.Listener;
 import com.projectles.povmt.R;
 import com.projectles.povmt.api.RestClient;
+import com.projectles.povmt.api.shared.RequestManager;
 import com.projectles.povmt.models.Atividade;
 import com.projectles.povmt.models.TempoInvestido;
 import com.projectles.povmt.models.Util;
@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AtividadesDetalhadasActivity extends AppCompatActivity {
+
     private TextView nome;
     private TextView descricao;
     private TextView dataCriacao;
@@ -38,7 +39,10 @@ public class AtividadesDetalhadasActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        client = new RestClient(this);
         setContentView(R.layout.activity_atividades_detalhes);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -70,9 +74,6 @@ public class AtividadesDetalhadasActivity extends AppCompatActivity {
         tempoInvestido.setText(String.valueOf(atividade.getTisum()));
         dataAtualizacao.setText(Util.getStringOfDateHoraDiaAno(atividade.getAtualizacao()));
         dataCriacao.setText(Util.getStringOfDateHoraDiaAno(atividade.getCriacao()));
-
-        // Init Rest Client
-        client = new RestClient(getApplicationContext());
     }
 
     public void createDialogNewTi() {
@@ -98,20 +99,28 @@ public class AtividadesDetalhadasActivity extends AppCompatActivity {
                         params.put("activityFk", atividade.getId().toString());
                         params.put("duration", edtTi.getText().toString());
 
-                        client.tempoInvestido.addTempoInvestido(new Response.Listener<TempoInvestido>() {
-                            @Override
-                            public void onResponse(TempoInvestido response) {
-                                atividade.addTempoInvestido(response);
-                                atividade.setAtualizacao(new Date());
-                                tempoInvestido.setText(String.valueOf(atividade.getTisum()));
-                                dataAtualizacao.setText(Util.getStringOfDateHoraDiaAno(atividade.getAtualizacao()));
-                            }
-                        }, params);
+                        if (Util.isConnectedToInternet(getApplicationContext())) {
+                            client.tempoInvestido.addTempoInvestido(new Listener<TempoInvestido>() {
+                                @Override
+                                public void onResponse(TempoInvestido response) {
+                                    atividade.addTempoInvestido(response);
+                                    atividade.setAtualizacao(new Date());
+                                    tempoInvestido.setText(String.valueOf(atividade.getTisum()));
+                                    dataAtualizacao.setText(Util.getStringOfDateHoraDiaAno(atividade.getAtualizacao()));
+                                }
+                            }, params);
+                        } else {
+                            Toast.makeText(
+                                    getApplicationContext(),
+                                    "Sem conexão com a internet, impossível completar a operação",
+                                    Toast.LENGTH_LONG
+                            ).show();
+                        }
                     } catch (NumberFormatException ex) {
                         Toast.makeText(getApplicationContext(),
                                 "Preencha os campos corretamente!", Toast.LENGTH_LONG).show();
                     }
-                }else{
+                } else {
                     Toast.makeText(getApplicationContext(),
                             "Preencha os campos corretamente!", Toast.LENGTH_LONG).show();
                 }
@@ -123,5 +132,13 @@ public class AtividadesDetalhadasActivity extends AppCompatActivity {
                 });
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        RequestManager.getInstance(this).stopRequestsInRequestQueueByTag(
+                getString(R.string.activities_requests)
+        );
     }
 }
