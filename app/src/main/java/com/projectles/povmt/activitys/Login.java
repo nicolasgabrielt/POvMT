@@ -89,8 +89,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
                 emailUser = acct.getEmail();
                 idUser = acct.getId();
                 fotoUser = acct.getPhotoUrl();
-                if (usuario != null) tt.setText("Bem vindo " + nomeUser);
-            } //else signIn();
+                if (nomeUser!=null) tt.setText("Bem vindo " + nomeUser); //não funciona no motoG
+            }
         }
     }
 }
