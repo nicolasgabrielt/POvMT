@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -18,6 +19,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.projectles.povmt.R;
+import com.projectles.povmt.models.Util;
 
 public class Login extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.OnConnectionFailedListener {
     private GoogleApiClient mGoogleApiClient;
@@ -56,14 +58,23 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
                 break;
             case R.id.desconetar:
                 tt.setText("POVMT- Para Onde Vai Meu Tempo?");
+                revokeAccess();
                 signOut();
                 break;
         }
     }
 
     private void signIn() {
-        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-        startActivityForResult(signInIntent, RC_SIGN_IN);
+        if (!Util.isConnectedToInternet(this)) {
+            Toast.makeText(
+                    getApplicationContext(),
+                    "Sem conexão com a internet, impossível completar a operação",
+                    Toast.LENGTH_LONG
+            ).show();
+        }else {
+            Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+            startActivityForResult(signInIntent, RC_SIGN_IN);
+        }
     }
 
     private void signOut() {
@@ -92,5 +103,11 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
                 if (nomeUser!=null) tt.setText("Bem vindo " + nomeUser); //não funciona no motoG
             }
         }
+    }
+
+    private void revokeAccess() {
+        Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient).setResultCallback(
+                new ResultCallback<Status>() {
+                    @Override public void onResult(Status status) {}});
     }
 }
