@@ -55,6 +55,11 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
             case R.id.entrar:
                 if(!tt.getText().equals("POVMT- Para Onde Vai Meu Tempo?"))
                     startActivity(new Intent(Login.this, ListarAtividadesActivity.class));
+                else Toast.makeText(
+                        getApplicationContext(),
+                        "Sem usuário conectado",
+                        Toast.LENGTH_LONG
+                ).show();
                 break;
             case R.id.desconetar:
                 tt.setText("POVMT- Para Onde Vai Meu Tempo?");
