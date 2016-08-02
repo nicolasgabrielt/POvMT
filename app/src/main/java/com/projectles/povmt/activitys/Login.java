@@ -1,7 +1,8 @@
 package com.projectles.povmt.activitys;
 
+import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -25,13 +26,9 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
     private GoogleApiClient mGoogleApiClient;
     private static final int RC_SIGN_IN = 9001;
     private static final String TAG = "SignInActivity";
-    private TextView tt;
+    private TextView loginPOVMT;
     private GoogleSignInOptions usuario;
-    public GoogleSignInAccount acct;
-    public String nomeUser;
-    public String emailUser;
-    public String idUser;
-    public Uri fotoUser;
+    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +39,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
         findViewById(R.id.sign_in_button).setOnClickListener(this);
         findViewById(R.id.entrar).setOnClickListener(this);
         findViewById(R.id.desconetar).setOnClickListener(this);
-        tt = (TextView) findViewById(R.id.t);
+        loginPOVMT = (TextView) findViewById(R.id.t);
         signIn();
     }
 
@@ -53,7 +50,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
                 signIn();
                 break;
             case R.id.entrar:
-                if(!tt.getText().equals("POVMT- Para Onde Vai Meu Tempo?"))
+                if(!loginPOVMT.getText().equals("POVMT- Para Onde Vai Meu Tempo?"))
                     startActivity(new Intent(Login.this, ListarAtividadesActivity.class));
                 else Toast.makeText(
                         getApplicationContext(),
@@ -62,11 +59,38 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
                 ).show();
                 break;
             case R.id.desconetar:
-                tt.setText("POVMT- Para Onde Vai Meu Tempo?");
+                loginPOVMT.setText("POVMT- Para Onde Vai Meu Tempo?");
                 revokeAccess();
                 signOut();
                 break;
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RC_SIGN_IN) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            Log.d(TAG, "handleSignInResult:" + result.isSuccess());
+            if (result.isSuccess())
+               recuperandoInformacoesUsuario(result.getSignInAccount());
+        }
+    }
+
+    private void recuperandoInformacoesUsuario(GoogleSignInAccount acct){
+        prefs = getSharedPreferences("POVMT_Login", Context.MODE_PRIVATE);
+        SharedPreferences.Editor ed = prefs.edit();
+        ed.putString("nome",acct.getDisplayName());
+        ed.putString("email",acct.getEmail());
+        ed.putString("id",acct.getId());
+        ed.commit();
+        if (prefs.getString("nome","")!=null) loginPOVMT.setText("Bem vindo " + prefs.getString("nome",""));
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.d(TAG, "onConnectionFailed:" + connectionResult);
+        signIn();
     }
 
     private void signIn() {
@@ -76,10 +100,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
                     "Sem conexão com a internet, impossível completar a operação",
                     Toast.LENGTH_LONG
             ).show();
-        }else {
-            Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-            startActivityForResult(signInIntent, RC_SIGN_IN);
-        }
+        }else
+            startActivityForResult(Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient), RC_SIGN_IN);
     }
 
     private void signOut() {
@@ -87,32 +109,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
                 new ResultCallback<Status>() {@Override public void onResult(Status status) {}});
     }
 
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.d(TAG, "onConnectionFailed:" + connectionResult);
-        signIn();
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RC_SIGN_IN) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            Log.d(TAG, "handleSignInResult:" + result.isSuccess());
-            if (result.isSuccess()){          //recuperando informações do usuário
-                acct = result.getSignInAccount();
-                nomeUser = acct.getDisplayName();
-                emailUser = acct.getEmail();
-                idUser = acct.getId();
-                fotoUser = acct.getPhotoUrl();
-                if (nomeUser!=null) tt.setText("Bem vindo " + nomeUser); //não funciona no motoG
-            }
-        }
-    }
-
     private void revokeAccess() {
         Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient).setResultCallback(
-                new ResultCallback<Status>() {
-                    @Override public void onResult(Status status) {}});
+                new ResultCallback<Status>() {@Override public void onResult(Status status) {}});
     }
 }
