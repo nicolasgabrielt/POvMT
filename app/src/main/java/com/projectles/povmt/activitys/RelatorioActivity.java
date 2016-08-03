@@ -176,4 +176,6 @@ public class RelatorioActivity extends AppCompatActivity {
                 getString(R.string.activities_requests)
         );
     }
+
+
 }

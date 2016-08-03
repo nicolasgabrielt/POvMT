@@ -30,6 +30,7 @@ public class RelatorioSemanalActivity extends AppCompatActivity {
     private AtividadesAdapter adapter;
 
     private RestClient client;
+
     private List<Atividade> atividades = new ArrayList<>();
 
     @Override
@@ -87,4 +88,10 @@ public class RelatorioSemanalActivity extends AppCompatActivity {
                 getString(R.string.activities_requests)
         );
     }
+
+    public List<Atividade> getAtividades() {
+        return atividades;
+    }
+
+
 }
