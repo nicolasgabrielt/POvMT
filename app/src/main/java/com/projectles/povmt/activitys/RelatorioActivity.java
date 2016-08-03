@@ -32,7 +32,7 @@ public class RelatorioActivity extends AppCompatActivity {
     private static final int DIVISOES_Y = 4;
 
     private RestClient client;
-    private List<Atividade> atividades = new ArrayList<>();
+    private List<Atividade> atividades = new ArrayList<Atividade>();
 
     private BarSet barSetCurr, barSetLast, barSetLate;
     private BarChartView currWeek, lastWeek, passWeek;

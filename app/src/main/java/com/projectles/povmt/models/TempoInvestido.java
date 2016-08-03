@@ -7,13 +7,13 @@ public class TempoInvestido implements Serializable {
     private static final long serialVersionUID = 1L;
     private Long id;
     private Long atividade;
-    private Date criacao;
+    private Date data;
     private double ti;
 
     public TempoInvestido(double ti, Long atividade){
         this.ti = ti;
         this.atividade = atividade;
-        criacao = new Date();
+        data = new Date();
     }
 
     public TempoInvestido(){
@@ -40,10 +40,10 @@ public class TempoInvestido implements Serializable {
     }
 
     public Date getCriacao() {
-        return criacao;
+        return data;
     }
 
     public void setCriacao(Date criacao) {
-        this.criacao = criacao;
+        this.data = criacao;
     }
 }
