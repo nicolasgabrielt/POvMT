@@ -3,7 +3,12 @@ package com.projectles.povmt.activitys;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -28,12 +33,17 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.projectles.povmt.DAO.DBHelper;
 import com.projectles.povmt.R;
+import com.projectles.povmt.models.Atividade;
+import com.projectles.povmt.models.Util;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -41,7 +51,8 @@ import static android.Manifest.permission.READ_CONTACTS;
  * A login screen that offers login via email/password.
  */
 public class Cadastro extends AppCompatActivity implements LoaderCallbacks<Cursor>, View.OnClickListener {
-
+    private DBHelper dbh = new DBHelper(this);
+    private SharedPreferences prefs;
     /**
      * Id to identity READ_CONTACTS permission request.
      */
@@ -98,17 +109,66 @@ public class Cadastro extends AppCompatActivity implements LoaderCallbacks<Curso
 
     @Override
     public void onClick(View v) {
+        SQLiteDatabase db;
+        Cursor c;
         switch (v.getId()) {
             case R.id.btn_login:
-
+                db = dbh.getReadableDatabase();
+                // Executa a consulta no banco de dados
+                c = db.rawQuery("select * from usuario where nome = '"+mEmailView.getText().toString()+"' and senha = '"+mPasswordView.getText().toString()+"'", null);
+                while (c.moveToNext()){
+                    recuperandoInformacoesUsuario(c.getLong(c.getColumnIndex("_id")));
+                    startActivity(new Intent(Cadastro.this, ListarAtividadesActivity.class));
+                    c.close();
+                    db.close();
+                    return;
+                }
+                Toast.makeText(
+                        getApplicationContext(),
+                        "Email ou senha incorreto",
+                        Toast.LENGTH_LONG
+                ).show();
+                c.close();
+                db.close();
+                finish();
                 break;
             case R.id.btn_cadastrar:
-                DBHelper dbh = new DBHelper(this);
-                dbh.getWritableDatabase();
+                db = dbh.getWritableDatabase();
+                // Executa a consulta no banco de dados
+                c = db.rawQuery("select * from usuario where nome = '"+mEmailView.getText().toString()+"'", null);
+                ContentValues values = new ContentValues();
+                values.put("nome", mEmailView.getText().toString());
+                values.put("senha", mPasswordView.getText().toString());
 
-                String s = "GET * FROM ";
-                break;
+
+                /**
+                 * Percorre o Cursor, injetando os dados consultados em um objeto
+                 * do tipo ObjetoEmprestado e adicionando-os na List
+                 */
+
+                    while (c.moveToNext()) {
+                        Toast.makeText(
+                                getApplicationContext(),
+                                "Email já cadastrado",
+                                Toast.LENGTH_LONG
+                        ).show();
+                        c.close();
+                        db.close();
+                        return;
+                    }
+                    recuperandoInformacoesUsuario(db.insert("usuario",null,values));
+                    startActivity(new Intent(Cadastro.this, ListarAtividadesActivity.class));
+                c.close();
+                db.close();
+                finish();
         }
+    }
+
+    private void recuperandoInformacoesUsuario(long id){
+        prefs = getSharedPreferences("POVMT_Login", Context.MODE_PRIVATE);
+        SharedPreferences.Editor ed = prefs.edit();
+        ed.putString("id",Long.toString(id));
+        ed.commit();
     }
 
     private void populateAutoComplete() {
