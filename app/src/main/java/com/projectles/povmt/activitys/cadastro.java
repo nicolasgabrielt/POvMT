@@ -32,6 +32,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.projectles.povmt.DAO.DBHelper;
 import com.projectles.povmt.R;
 
 import static android.Manifest.permission.READ_CONTACTS;
@@ -86,14 +87,6 @@ public class Cadastro extends AppCompatActivity implements LoaderCallbacks<Curso
             }
         });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                attemptLogin();
-            }
-        });
-
         login = (Button) findViewById(R.id.btn_login);
         cadastrar = (Button) findViewById(R.id.btn_cadastrar);
 
@@ -110,7 +103,10 @@ public class Cadastro extends AppCompatActivity implements LoaderCallbacks<Curso
 
                 break;
             case R.id.btn_cadastrar:
+                DBHelper dbh = new DBHelper(this);
+                dbh.getWritableDatabase();
 
+                String s = "GET * FROM ";
                 break;
         }
     }
