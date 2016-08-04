@@ -1,13 +1,16 @@
 package com.projectles.povmt.activitys;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +42,8 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
         findViewById(R.id.sign_in_button).setOnClickListener(this);
         findViewById(R.id.entrar).setOnClickListener(this);
         findViewById(R.id.desconetar).setOnClickListener(this);
+        findViewById(R.id.loginPovmt).setOnClickListener(this);
+
         loginPOVMT = (TextView) findViewById(R.id.t);
         signIn();
     }
@@ -63,8 +68,12 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
                 revokeAccess();
                 signOut();
                 break;
+            case R.id.loginPovmt:
+                startActivity(new Intent(Login.this, Cadastro.class));
+                break;
         }
     }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
