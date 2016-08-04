@@ -65,7 +65,7 @@
 
             <Button
                 style="?android:attr/buttonStyleSmall"
-                android:layout_width="320dp"
+                android:layout_width="366dp"
                 android:layout_height="wrap_content"
                 android:text="Login POvMT"
                 android:id="@+id/btn_login"

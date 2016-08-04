@@ -52,7 +52,13 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.sign_in_button:
-                signIn();
+                if(loginPOVMT.getText().equals("POVMT- Para Onde Vai Meu Tempo?"))
+                    signIn();
+                else Toast.makeText(
+                        getApplicationContext(),
+                        "Já existe usuário conectado",
+                        Toast.LENGTH_LONG
+                ).show();
                 break;
             case R.id.entrar:
                 if(!loginPOVMT.getText().equals("POVMT- Para Onde Vai Meu Tempo?"))
@@ -69,7 +75,13 @@ public class Login extends AppCompatActivity implements View.OnClickListener, Go
                 signOut();
                 break;
             case R.id.loginPovmt:
-                startActivity(new Intent(Login.this, Cadastro.class));
+                if(loginPOVMT.getText().equals("POVMT- Para Onde Vai Meu Tempo?"))
+                    startActivity(new Intent(Login.this, Cadastro.class));
+                else Toast.makeText(
+                        getApplicationContext(),
+                        "Já existe usuário conectado",
+                        Toast.LENGTH_LONG
+                ).show();
                 break;
         }
     }
